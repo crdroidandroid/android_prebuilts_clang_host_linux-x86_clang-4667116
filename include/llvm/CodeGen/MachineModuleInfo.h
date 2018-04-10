@@ -155,6 +155,7 @@ public:
   const MCContext &getContext() const { return Context; }
   MCContext &getContext() { return Context; }
 
+  void setModule(const Module *M) { TheModule = M; }
   const Module *getModule() const { return TheModule; }
 
   /// Returns the MachineFunction constructed for the IR function \p F.

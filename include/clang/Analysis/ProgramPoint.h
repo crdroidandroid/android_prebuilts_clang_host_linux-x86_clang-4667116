@@ -73,9 +73,8 @@ public:
               PostStoreKind,
               PostConditionKind,
               PostLValueKind,
-              PostAllocatorCallKind,
               MinPostStmtKind = PostStmtKind,
-              MaxPostStmtKind = PostAllocatorCallKind,
+              MaxPostStmtKind = PostLValueKind,
               PostInitializerKind,
               CallEnterKind,
               CallExitBeginKind,
@@ -98,7 +97,7 @@ private:
   llvm::PointerIntPair<const ProgramPointTag *, 2, unsigned> Tag;
 
 protected:
-  ProgramPoint() = default;
+  ProgramPoint() {}
   ProgramPoint(const void *P,
                Kind k,
                const LocationContext *l,
@@ -234,7 +233,7 @@ public:
   
 private:
   friend class ProgramPoint;
-  BlockEntrance() = default;
+  BlockEntrance() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == BlockEntranceKind;
   }
@@ -255,7 +254,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  BlockExit() = default;
+  BlockExit() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == BlockExitKind;
   }
@@ -275,7 +274,7 @@ public:
   const T* getStmtAs() const { return dyn_cast<T>(getStmt()); }
 
 protected:
-  StmtPoint() = default;
+  StmtPoint() {}
 private:
   friend class ProgramPoint;
   static bool isKind(const ProgramPoint &Location) {
@@ -295,7 +294,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PreStmt() = default;
+  PreStmt() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PreStmtKind;
   }
@@ -303,7 +302,7 @@ private:
 
 class PostStmt : public StmtPoint {
 protected:
-  PostStmt() = default;
+  PostStmt() {}
   PostStmt(const Stmt *S, const void *data, Kind k, const LocationContext *L,
            const ProgramPointTag *tag = nullptr)
     : StmtPoint(S, data, k, L, tag) {}
@@ -334,7 +333,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PostCondition() = default;
+  PostCondition() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PostConditionKind;
   }
@@ -342,7 +341,7 @@ private:
 
 class LocationCheck : public StmtPoint {
 protected:
-  LocationCheck() = default;
+  LocationCheck() {}
   LocationCheck(const Stmt *S, const LocationContext *L,
                 ProgramPoint::Kind K, const ProgramPointTag *tag)
     : StmtPoint(S, nullptr, K, L, tag) {}
@@ -363,7 +362,7 @@ public:
   
 private:
   friend class ProgramPoint;
-  PreLoad() = default;
+  PreLoad() {}
   static bool isKind(const ProgramPoint &location) {
     return location.getKind() == PreLoadKind;
   }
@@ -377,7 +376,7 @@ public:
   
 private:
   friend class ProgramPoint;
-  PreStore() = default;
+  PreStore() {}
   static bool isKind(const ProgramPoint &location) {
     return location.getKind() == PreStoreKind;
   }
@@ -391,7 +390,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PostLoad() = default;
+  PostLoad() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PostLoadKind;
   }
@@ -418,7 +417,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PostStore() = default;
+  PostStore() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PostStoreKind;
   }
@@ -432,7 +431,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PostLValue() = default;
+  PostLValue() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PostLValueKind;
   }
@@ -448,7 +447,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PreStmtPurgeDeadSymbols() = default;
+  PreStmtPurgeDeadSymbols() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PreStmtPurgeDeadSymbolsKind;
   }
@@ -464,7 +463,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PostStmtPurgeDeadSymbols() = default;
+  PostStmtPurgeDeadSymbols() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PostStmtPurgeDeadSymbolsKind;
   }
@@ -488,7 +487,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  BlockEdge() = default;
+  BlockEdge() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == BlockEdgeKind;
   }
@@ -517,7 +516,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PostInitializer() = default;
+  PostInitializer() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PostInitializerKind;
   }
@@ -538,7 +537,7 @@ public:
   }
 
 protected:
-  ImplicitCallPoint() = default;
+  ImplicitCallPoint() {}
 private:
   friend class ProgramPoint;
   static bool isKind(const ProgramPoint &Location) {
@@ -558,7 +557,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  PreImplicitCall() = default;
+  PreImplicitCall() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PreImplicitCallKind;
   }
@@ -575,23 +574,9 @@ public:
 
 private:
   friend class ProgramPoint;
-  PostImplicitCall() = default;
+  PostImplicitCall() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == PostImplicitCallKind;
-  }
-};
-
-class PostAllocatorCall : public StmtPoint {
-public:
-  PostAllocatorCall(const Stmt *S, const LocationContext *L,
-                    const ProgramPointTag *Tag = nullptr)
-      : StmtPoint(S, nullptr, PostAllocatorCallKind, L, Tag) {}
-
-private:
-  friend class ProgramPoint;
-  PostAllocatorCall() = default;
-  static bool isKind(const ProgramPoint &Location) {
-    return Location.getKind() == PostAllocatorCallKind;
   }
 };
 
@@ -620,7 +605,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  CallEnter() = default;
+  CallEnter() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == CallEnterKind;
   }
@@ -641,13 +626,9 @@ public:
   CallExitBegin(const StackFrameContext *L, const ReturnStmt *RS)
     : ProgramPoint(RS, CallExitBeginKind, L, nullptr) { }
 
-  const ReturnStmt *getReturnStmt() const {
-    return static_cast<const ReturnStmt *>(getData1());
-  }
-
 private:
   friend class ProgramPoint;
-  CallExitBegin() = default;
+  CallExitBegin() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == CallExitBeginKind;
   }
@@ -668,7 +649,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  CallExitEnd() = default;
+  CallExitEnd() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == CallExitEndKind;
   }
@@ -691,7 +672,7 @@ public:
 
 private:
     friend class ProgramPoint;
-    LoopExit() = default;
+    LoopExit() {}
     static bool isKind(const ProgramPoint &Location) {
       return Location.getKind() == LoopExitKind;
     }
@@ -710,7 +691,7 @@ public:
 
 private:
   friend class ProgramPoint;
-  EpsilonPoint() = default;
+  EpsilonPoint() {}
   static bool isKind(const ProgramPoint &Location) {
     return Location.getKind() == EpsilonKind;
   }

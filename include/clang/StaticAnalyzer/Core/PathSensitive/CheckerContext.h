@@ -193,7 +193,7 @@ public:
 
   /// \brief Get the value of arbitrary expressions at this point in the path.
   SVal getSVal(const Stmt *S) const {
-    return Pred->getSVal(S);
+    return getState()->getSVal(S, getLocationContext());
   }
 
   /// \brief Returns true if the value of \p E is greater than or equal to \p

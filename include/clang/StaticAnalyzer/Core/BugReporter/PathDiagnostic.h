@@ -23,8 +23,6 @@
 #include <deque>
 #include <iterator>
 #include <list>
-#include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -336,7 +334,7 @@ public:
 // Path "pieces" for path-sensitive diagnostics.
 //===----------------------------------------------------------------------===//
 
-class PathDiagnosticPiece: public llvm::FoldingSetNode {
+class PathDiagnosticPiece {
 public:
   enum Kind { ControlFlow, Event, Macro, Call, Note };
   enum DisplayHint { Above, Below };
@@ -735,9 +733,6 @@ public:
   void Profile(llvm::FoldingSetNodeID &ID) const override;
 };
 
-/// File IDs mapped to sets of line numbers.
-typedef std::map<unsigned, std::set<unsigned>> FilesToLineNumsMap;
-
 /// PathDiagnostic - PathDiagnostic objects represent a single path-sensitive
 ///  diagnostic.  It represents an ordered-collection of PathDiagnosticPieces,
 ///  each which represent the pieces of the path.
@@ -761,16 +756,12 @@ class PathDiagnostic : public llvm::FoldingSetNode {
   PathDiagnosticLocation UniqueingLoc;
   const Decl *UniqueingDecl;
 
-  /// Lines executed in the path.
-  std::unique_ptr<FilesToLineNumsMap> ExecutedLines;
-
   PathDiagnostic() = delete;
 public:
   PathDiagnostic(StringRef CheckName, const Decl *DeclWithIssue,
                  StringRef bugtype, StringRef verboseDesc, StringRef shortDesc,
                  StringRef category, PathDiagnosticLocation LocationToUnique,
-                 const Decl *DeclToUnique,
-                 std::unique_ptr<FilesToLineNumsMap> ExecutedLines);
+                 const Decl *DeclToUnique);
 
   ~PathDiagnostic();
   
@@ -838,12 +829,6 @@ public:
   meta_iterator meta_begin() const { return OtherDesc.begin(); }
   meta_iterator meta_end() const { return OtherDesc.end(); }
   void addMeta(StringRef s) { OtherDesc.push_back(s); }
-
-  typedef FilesToLineNumsMap::const_iterator filesmap_iterator;
-  filesmap_iterator executedLines_begin() const {
-    return ExecutedLines->begin();
-  }
-  filesmap_iterator executedLines_end() const { return ExecutedLines->end(); }
 
   PathDiagnosticLocation getLocation() const {
     assert(Loc.isValid() && "No report location set yet!");

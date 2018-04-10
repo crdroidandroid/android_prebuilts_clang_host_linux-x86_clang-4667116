@@ -339,7 +339,9 @@ public:
   SmallVectorImpl(const SmallVectorImpl &) = delete;
 
   ~SmallVectorImpl() {
-    // Subclass has already destructed this vector's elements.
+    // Destroy the constructed elements in the vector.
+    this->destroy_range(this->begin(), this->end());
+
     // If this wasn't grown from the inline copy, deallocate the old space.
     if (!this->isSmall())
       free(this->begin());
@@ -866,11 +868,6 @@ class SmallVector : public SmallVectorImpl<T> {
 public:
   SmallVector() : SmallVectorImpl<T>(N) {}
 
-  ~SmallVector() {
-    // Destroy the constructed elements in the vector.
-    this->destroy_range(this->begin(), this->end());
-  }
-
   explicit SmallVector(size_t Size, const T &Value = T())
     : SmallVectorImpl<T>(N) {
     this->assign(Size, Value);
@@ -930,8 +927,8 @@ public:
   }
 };
 
-template <typename T, unsigned N>
-inline size_t capacity_in_bytes(const SmallVector<T, N> &X) {
+template<typename T, unsigned N>
+static inline size_t capacity_in_bytes(const SmallVector<T, N> &X) {
   return X.capacity_in_bytes();
 }
 

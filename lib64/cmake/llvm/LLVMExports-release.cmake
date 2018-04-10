@@ -174,16 +174,6 @@ set_target_properties(LLVMInstrumentation PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS LLVMInstrumentation )
 list(APPEND _IMPORT_CHECK_FILES_FOR_LLVMInstrumentation "${_IMPORT_PREFIX}/lib64/libLLVMInstrumentation.a" )
 
-# Import target "LLVMAggressiveInstCombine" for configuration "Release"
-set_property(TARGET LLVMAggressiveInstCombine APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-set_target_properties(LLVMAggressiveInstCombine PROPERTIES
-  IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib64/libLLVMAggressiveInstCombine.a"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS LLVMAggressiveInstCombine )
-list(APPEND _IMPORT_CHECK_FILES_FOR_LLVMAggressiveInstCombine "${_IMPORT_PREFIX}/lib64/libLLVMAggressiveInstCombine.a" )
-
 # Import target "LLVMInstCombine" for configuration "Release"
 set_property(TARGET LLVMInstCombine APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(LLVMInstCombine PROPERTIES
@@ -877,12 +867,12 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_LLVMWindowsManifest "${_IMPORT_PREFIX}/lib64
 # Import target "LTO" for configuration "Release"
 set_property(TARGET LTO APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(LTO PROPERTIES
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib64/libLTO.so.7.0.1svn"
-  IMPORTED_SONAME_RELEASE "libLTO.so.7"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib64/libLTO.so.6.0.2svn"
+  IMPORTED_SONAME_RELEASE "libLTO.so.6"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS LTO )
-list(APPEND _IMPORT_CHECK_FILES_FOR_LTO "${_IMPORT_PREFIX}/lib64/libLTO.so.7.0.1svn" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_LTO "${_IMPORT_PREFIX}/lib64/libLTO.so.6.0.2svn" )
 
 # Import target "LLVMgold" for configuration "Release"
 set_property(TARGET LLVMgold APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
@@ -1231,12 +1221,12 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-rtdyld "${_IMPORT_PREFIX}/bin/llvm-rtdy
 # Import target "LLVM" for configuration "Release"
 set_property(TARGET LLVM APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(LLVM PROPERTIES
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib64/libLLVM-7.0svn.so"
-  IMPORTED_SONAME_RELEASE "libLLVM-7.0svn.so"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib64/libLLVM-6.0svn.so"
+  IMPORTED_SONAME_RELEASE "libLLVM-6.0svn.so"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS LLVM )
-list(APPEND _IMPORT_CHECK_FILES_FOR_LLVM "${_IMPORT_PREFIX}/lib64/libLLVM-7.0svn.so" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_LLVM "${_IMPORT_PREFIX}/lib64/libLLVM-6.0svn.so" )
 
 # Import target "llvm-size" for configuration "Release"
 set_property(TARGET llvm-size APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)

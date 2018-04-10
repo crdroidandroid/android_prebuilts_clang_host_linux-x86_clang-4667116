@@ -19,7 +19,6 @@
 #ifndef LLVM_PASSANALYSISSUPPORT_H
 #define LLVM_PASSANALYSISSUPPORT_H
 
-#include "Pass.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include <cassert>
@@ -174,7 +173,7 @@ public:
     AnalysisImpls.push_back(pir);
   }
 
-  /// Clear cache that is used to connect a pass to the analysis (PassInfo).
+  /// Clear cache that is used to connect a pass to the the analysis (PassInfo).
   void clearAnalysisImpls() {
     AnalysisImpls.clear();
   }

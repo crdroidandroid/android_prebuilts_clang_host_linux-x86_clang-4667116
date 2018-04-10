@@ -275,8 +275,6 @@ struct coff_symbol_generic {
   support::ulittle32_t Value;
 };
 
-struct coff_aux_section_definition;
-
 class COFFSymbolRef {
 public:
   COFFSymbolRef() = default;
@@ -346,18 +344,6 @@ public:
 
   uint8_t getComplexType() const {
     return (getType() & 0xF0) >> COFF::SCT_COMPLEX_TYPE_SHIFT;
-  }
-
-  template <typename T> const T *getAux() const {
-    return CS16 ? reinterpret_cast<const T *>(CS16 + 1)
-                : reinterpret_cast<const T *>(CS32 + 1);
-  }
-
-  const coff_aux_section_definition *getSectionDefinition() const {
-    if (!getNumberOfAuxSymbols() ||
-        getStorageClass() != COFF::IMAGE_SYM_CLASS_STATIC)
-      return nullptr;
-    return getAux<coff_aux_section_definition>();
   }
 
   bool isAbsolute() const {
@@ -743,12 +729,6 @@ struct coff_resource_dir_table {
   support::ulittle16_t NumberOfIDEntries;
 };
 
-struct debug_h_header {
-  support::ulittle32_t Magic;
-  support::ulittle16_t Version;
-  support::ulittle16_t HashAlgorithm;
-};
-
 class COFFObjectFile : public ObjectFile {
 private:
   friend class ImportDirectoryEntryRef;
@@ -926,7 +906,7 @@ public:
 
   uint8_t getBytesInAddress() const override;
   StringRef getFileFormatName() const override;
-  Triple::ArchType getArch() const override;
+  unsigned getArch() const override;
   SubtargetFeatures getFeatures() const override { return SubtargetFeatures(); }
 
   import_directory_iterator import_directory_begin() const;
@@ -1164,7 +1144,7 @@ public:
   BaseRelocRef() = default;
   BaseRelocRef(const coff_base_reloc_block_header *Header,
                const COFFObjectFile *Owner)
-      : Header(Header), Index(0) {}
+      : Header(Header), Index(0), OwningObject(Owner) {}
 
   bool operator==(const BaseRelocRef &Other) const;
   void moveNext();
@@ -1175,6 +1155,7 @@ public:
 private:
   const coff_base_reloc_block_header *Header;
   uint32_t Index;
+  const COFFObjectFile *OwningObject = nullptr;
 };
 
 class ResourceSectionRef {

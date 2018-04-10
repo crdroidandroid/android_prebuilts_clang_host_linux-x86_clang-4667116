@@ -16,7 +16,6 @@
 
 #include "clang/Basic/DebugInfoOptions.h"
 #include "clang/Basic/Sanitizers.h"
-#include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Target/TargetOptions.h"
 #include <map>
@@ -168,7 +167,7 @@ public:
   std::string SplitDwarfFile;
 
   /// The name of the relocation model to use.
-  llvm::Reloc::Model RelocationModel;
+  std::string RelocationModel;
 
   /// The thread model to use
   std::string ThreadModel;
@@ -205,9 +204,10 @@ public:
   /// the summary and module symbol table (and not, e.g. any debug metadata).
   std::string ThinLinkBitcodeFile;
 
-  /// Name of file passed with -fcuda-include-gpubinary option to forward to
-  /// CUDA runtime back-end for incorporating them into host-side object file.
-  std::string CudaGpuBinaryFileName;
+  /// A list of file names passed with -fcuda-include-gpubinary options to
+  /// forward to CUDA runtime back-end for incorporating them into host-side
+  /// object file.
+  std::vector<std::string> CudaGpuBinaryFileNames;
 
   /// The name of the file to which the backend should save YAML optimization
   /// records.
@@ -250,13 +250,6 @@ public:
 
   /// \brief A list of all -fno-builtin-* function names (e.g., memset).
   std::vector<std::string> NoBuiltinFuncs;
-
-  std::vector<std::string> Reciprocals;
-
-  /// The preferred width for auto-vectorization transforms. This is intended to
-  /// override default transforms based on the width of the architected vector
-  /// registers.
-  std::string PreferVectorWidth;
 
 public:
   // Define accessors/mutators for code generation options of enumeration type.

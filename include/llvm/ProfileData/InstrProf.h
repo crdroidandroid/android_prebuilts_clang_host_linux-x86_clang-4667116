@@ -859,9 +859,7 @@ enum ProfVersion {
   // In this version, profile summary data \c IndexedInstrProf::Summary is
   // stored after the profile header.
   Version4 = 4,
-  // In this version, the frontend PGO stable hash algorithm defaults to V2.
-  Version5 = 5,
-  // The current version is 5.
+  // The current version is 4.
   CurrentVersion = INSTR_PROF_INDEX_VERSION
 };
 const uint64_t Version = ProfVersion::CurrentVersion;

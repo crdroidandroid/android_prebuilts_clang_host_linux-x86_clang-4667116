@@ -470,7 +470,7 @@ public:
       //IR.getContext().yield();
     }
 
-    // Invalidation was handled after each pass in the above loop for the
+    // Invaliadtion was handled after each pass in the above loop for the
     // current unit of IR. Therefore, the remaining analysis results in the
     // AnalysisManager are preserved. We mark this with a set so that we don't
     // need to inspect each one individually.

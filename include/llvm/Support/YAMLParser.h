@@ -291,11 +291,9 @@ public:
   Node *getValue();
 
   void skip() override {
-    if (Node *Key = getKey()) {
-      Key->skip();
-      if (Node *Val = getValue())
-        Val->skip();
-    }
+    getKey()->skip();
+    if (Node *Val = getValue())
+      Val->skip();
   }
 
   static bool classof(const Node *N) {

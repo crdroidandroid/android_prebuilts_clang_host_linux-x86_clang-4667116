@@ -410,11 +410,6 @@ public:
     Second->PragmaDetectMismatch(Loc, Name, Value);
   }
 
-  void PragmaDebug(SourceLocation Loc, StringRef DebugType) override {
-    First->PragmaDebug(Loc, DebugType);
-    Second->PragmaDebug(Loc, DebugType);
-  }
-
   void PragmaMessage(SourceLocation Loc, StringRef Namespace,
                      PragmaMessageKind Kind, StringRef Str) override {
     First->PragmaMessage(Loc, Namespace, Kind, Str);

@@ -1,4 +1,4 @@
-//===- SourceManager.h - Track and cache source files -----------*- C++ -*-===//
+//===--- SourceManager.h - Track and cache source files ---------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -6,7 +6,7 @@
 // License. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-//
+///
 /// \file
 /// \brief Defines the SourceManager interface.
 ///
@@ -29,13 +29,14 @@
 /// location in the source where the macro was originally defined,
 /// and the presumed location is where the line directive states that
 /// the line is 17, or any other line.
-//
+///
 //===----------------------------------------------------------------------===//
 
 #ifndef LLVM_CLANG_BASIC_SOURCEMANAGER_H
 #define LLVM_CLANG_BASIC_SOURCEMANAGER_H
 
 #include "clang/Basic/FileManager.h"
+#include "clang/Basic/LLVM.h"
 #include "clang/Basic/SourceLocation.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/BitVector.h"
@@ -48,8 +49,10 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/MemoryBuffer.h"
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
@@ -66,6 +69,7 @@ class SourceManager;
 
 /// \brief Public enums and private classes that are part of the
 /// SourceManager implementation.
+///
 namespace SrcMgr {
 
   /// \brief Indicates whether a file or directory holds normal user code,
@@ -96,7 +100,6 @@ namespace SrcMgr {
     enum CCFlags {
       /// \brief Whether the buffer is invalid.
       InvalidFlag = 0x01,
-
       /// \brief Whether the buffer should not be freed on destruction.
       DoNotFreeFlag = 0x02
     };
@@ -127,12 +130,12 @@ namespace SrcMgr {
     ///
     /// This is lazily computed.  This is owned by the SourceManager
     /// BumpPointerAllocator object.
-    unsigned *SourceLineCache = nullptr;
+    unsigned *SourceLineCache;
 
     /// \brief The number of lines in this ContentCache.
     ///
     /// This is only valid if SourceLineCache is non-null.
-    unsigned NumLines = 0;
+    unsigned NumLines;
 
     /// \brief Indicates whether the buffer itself was provided to override
     /// the actual file contents.
@@ -154,14 +157,15 @@ namespace SrcMgr {
 
     ContentCache(const FileEntry *Ent, const FileEntry *contentEnt)
       : Buffer(nullptr, false), OrigEntry(Ent), ContentsEntry(contentEnt),
-        BufferOverridden(false), IsSystemFile(false), IsTransient(false) {}
+        SourceLineCache(nullptr), NumLines(0), BufferOverridden(false),
+        IsSystemFile(false), IsTransient(false) {}
     
     /// The copy ctor does not allow copies where source object has either
     /// a non-NULL Buffer or SourceLineCache.  Ownership of allocated memory
     /// is not transferred, so this is a logical error.
     ContentCache(const ContentCache &RHS)
-      : Buffer(nullptr, false), BufferOverridden(false), IsSystemFile(false),
-        IsTransient(false) {
+      : Buffer(nullptr, false), SourceLineCache(nullptr),
+        BufferOverridden(false), IsSystemFile(false), IsTransient(false) {
       OrigEntry = RHS.OrigEntry;
       ContentsEntry = RHS.ContentsEntry;
 
@@ -242,10 +246,6 @@ namespace SrcMgr {
   /// FileInfos contain a "ContentCache *", with the contents of the file.
   ///
   class FileInfo {
-    friend class clang::SourceManager;
-    friend class clang::ASTWriter;
-    friend class clang::ASTReader;
-
     /// \brief The location of the \#include that brought in this file.
     ///
     /// This is an invalid SLOC for the main file (top of the \#include chain).
@@ -263,6 +263,10 @@ namespace SrcMgr {
     /// \brief The content cache and the characteristic of the file.
     llvm::PointerIntPair<const ContentCache*, 3, CharacteristicKind>
         ContentAndKind;
+
+    friend class clang::SourceManager;
+    friend class clang::ASTWriter;
+    friend class clang::ASTReader;
 
   public:
     /// \brief Return a FileInfo object.
@@ -444,7 +448,7 @@ namespace SrcMgr {
     }
   };
 
-} // namespace SrcMgr
+}  // end SrcMgr namespace.
 
 /// \brief External source of source location entries.
 class ExternalSLocEntrySource {
@@ -542,7 +546,7 @@ public:
 /// \brief The stack used when building modules on demand, which is used
 /// to provide a link between the source managers of the different compiler
 /// instances.
-using ModuleBuildStack = ArrayRef<std::pair<std::string, FullSourceLoc>>;
+typedef ArrayRef<std::pair<std::string, FullSourceLoc>> ModuleBuildStack;
 
 /// \brief This class handles loading and caching of source files into memory.
 ///
@@ -574,7 +578,7 @@ class SourceManager : public RefCountedBase<SourceManager> {
 
   /// \brief True if the ContentCache for files that are overridden by other
   /// files, should report the original file name. Defaults to true.
-  bool OverridenFilesKeepOriginalName = true;
+  bool OverridenFilesKeepOriginalName;
 
   /// \brief True if non-system source files should be treated as volatile
   /// (likely to change while trying to use them). Defaults to false.
@@ -583,13 +587,12 @@ class SourceManager : public RefCountedBase<SourceManager> {
   /// \brief True if all files read during this compilation should be treated
   /// as transient (may not be present in later compilations using a module
   /// file created from this compilation). Defaults to false.
-  bool FilesAreTransient = false;
+  bool FilesAreTransient;
 
   struct OverriddenFilesInfoTy {
     /// \brief Files that have been overridden with the contents from another
     /// file.
     llvm::DenseMap<const FileEntry *, const FileEntry *> OverriddenFiles;
-
     /// \brief Files that were overridden with a memory buffer.
     llvm::DenseSet<const FileEntry *> OverriddenFilesWithBuffer;
   };
@@ -644,7 +647,7 @@ class SourceManager : public RefCountedBase<SourceManager> {
   llvm::BitVector SLocEntryLoaded;
 
   /// \brief An external source for source location entries.
-  ExternalSLocEntrySource *ExternalSLocEntries = nullptr;
+  ExternalSLocEntrySource *ExternalSLocEntries;
 
   /// \brief A one-entry cache to speed up getFileID.
   ///
@@ -655,7 +658,7 @@ class SourceManager : public RefCountedBase<SourceManager> {
   /// \brief Holds information for \#line directives.
   ///
   /// This is referenced by indices from SLocEntryTable.
-  LineTableInfo *LineTable = nullptr;
+  LineTableInfo *LineTable;
 
   /// \brief These ivars serve as a cache used in the getLineNumber
   /// method which is used to speedup getLineNumber calls to nearby locations.
@@ -671,8 +674,7 @@ class SourceManager : public RefCountedBase<SourceManager> {
   FileID PreambleFileID;
 
   // Statistics for -print-stats.
-  mutable unsigned NumLinearScans = 0;
-  mutable unsigned NumBinaryProbes = 0;
+  mutable unsigned NumLinearScans, NumBinaryProbes;
 
   /// \brief Associates a FileID with its "included/expanded in" decomposed
   /// location.
@@ -682,12 +684,12 @@ class SourceManager : public RefCountedBase<SourceManager> {
   mutable llvm::DenseMap<FileID, std::pair<FileID, unsigned>> IncludedLocMap;
 
   /// The key value into the IsBeforeInTUCache table.
-  using IsBeforeInTUCacheKey = std::pair<FileID, FileID>;
+  typedef std::pair<FileID, FileID> IsBeforeInTUCacheKey;
 
   /// The IsBeforeInTranslationUnitCache is a mapping from FileID pairs
   /// to cache results.
-  using InBeforeInTUCache =
-      llvm::DenseMap<IsBeforeInTUCacheKey, InBeforeInTUCacheEntry>;
+  typedef llvm::DenseMap<IsBeforeInTUCacheKey, InBeforeInTUCacheEntry>
+          InBeforeInTUCache;
 
   /// Cache results for the isBeforeInTranslationUnit method.
   mutable InBeforeInTUCache IBTUCache;
@@ -704,7 +706,7 @@ class SourceManager : public RefCountedBase<SourceManager> {
 
   /// \brief Lazily computed map of macro argument chunks to their expanded
   /// source location.
-  using MacroArgsMap = std::map<unsigned, SourceLocation>;
+  typedef std::map<unsigned, SourceLocation> MacroArgsMap;
 
   mutable llvm::DenseMap<FileID, std::unique_ptr<MacroArgsMap>>
       MacroArgsCacheMap;
@@ -1137,18 +1139,6 @@ public:
   /// be used by clients.
   SourceLocation getImmediateSpellingLoc(SourceLocation Loc) const;
 
-  /// \brief Form a SourceLocation from a FileID and Offset pair.
-  SourceLocation getComposedLoc(FileID FID, unsigned Offset) const {
-    bool Invalid = false;
-    const SrcMgr::SLocEntry &Entry = getSLocEntry(FID, &Invalid);
-    if (Invalid)
-      return SourceLocation();
-
-    unsigned GlobalOffset = Entry.getOffset() + Offset;
-    return Entry.isFile() ? SourceLocation::getFileLoc(GlobalOffset)
-                          : SourceLocation::getMacroLoc(GlobalOffset);
-  }
-
   /// \brief Decompose the specified location into a raw FileID + Offset pair.
   ///
   /// The first element is the FileID, the second is the offset from the
@@ -1427,6 +1417,7 @@ public:
   //===--------------------------------------------------------------------===//
 
   /// \brief Return the uniqued ID for the specified filename.
+  ///
   unsigned getLineTableFilenameID(StringRef Str);
 
   /// \brief Add a line note to the line table for the FileID and offset
@@ -1547,9 +1538,8 @@ public:
   }
 
   // Iterators over FileInfos.
-  using fileinfo_iterator =
-      llvm::DenseMap<const FileEntry*, SrcMgr::ContentCache*>::const_iterator;
-
+  typedef llvm::DenseMap<const FileEntry*, SrcMgr::ContentCache*>
+      ::const_iterator fileinfo_iterator;
   fileinfo_iterator fileinfo_begin() const { return FileInfos.begin(); }
   fileinfo_iterator fileinfo_end() const { return FileInfos.end(); }
   bool hasFileInfo(const FileEntry *File) const {
@@ -1557,6 +1547,7 @@ public:
   }
 
   /// \brief Print statistics to stderr.
+  ///
   void PrintStats() const;
 
   void dump() const;
@@ -1646,13 +1637,7 @@ public:
     return getImmediateExpansionRange(Loc).first;
   }
 
-  /// \return Location of the top-level macro caller.
-  SourceLocation getTopMacroCallerLoc(SourceLocation Loc) const;
-
 private:
-  friend class ASTReader;
-  friend class ASTWriter;
-
   llvm::MemoryBuffer *getFakeBufferForRecovery() const;
   const SrcMgr::ContentCache *getFakeContentCacheForRecovery() const;
 
@@ -1744,6 +1729,8 @@ private:
                                          SourceLocation SpellLoc,
                                          SourceLocation ExpansionLoc,
                                          unsigned ExpansionLength) const;
+  friend class ASTReader;
+  friend class ASTWriter;
 };
 
 /// \brief Comparison function object.
@@ -1756,7 +1743,7 @@ class BeforeThanCompare<SourceLocation> {
   SourceManager &SM;
 
 public:
-  explicit BeforeThanCompare(SourceManager &SM) : SM(SM) {}
+  explicit BeforeThanCompare(SourceManager &SM) : SM(SM) { }
 
   bool operator()(SourceLocation LHS, SourceLocation RHS) const {
     return SM.isBeforeInTranslationUnit(LHS, RHS);
@@ -1769,13 +1756,13 @@ class BeforeThanCompare<SourceRange> {
   SourceManager &SM;
 
 public:
-  explicit BeforeThanCompare(SourceManager &SM) : SM(SM) {}
+  explicit BeforeThanCompare(SourceManager &SM) : SM(SM) { }
 
   bool operator()(SourceRange LHS, SourceRange RHS) const {
     return SM.isBeforeInTranslationUnit(LHS.getBegin(), RHS.getBegin());
   }
 };
 
-} // namespace clang
+} // end namespace clang
 
 #endif // LLVM_CLANG_BASIC_SOURCEMANAGER_H

@@ -137,15 +137,17 @@ protected:
   virtual char *getMemoryForGV(const GlobalVariable *GV);
 
   static ExecutionEngine *(*MCJITCtor)(
-      std::unique_ptr<Module> M, std::string *ErrorStr,
-      std::shared_ptr<MCJITMemoryManager> MM,
-      std::shared_ptr<LegacyJITSymbolResolver> SR,
-      std::unique_ptr<TargetMachine> TM);
+                                std::unique_ptr<Module> M,
+                                std::string *ErrorStr,
+                                std::shared_ptr<MCJITMemoryManager> MM,
+                                std::shared_ptr<JITSymbolResolver> SR,
+                                std::unique_ptr<TargetMachine> TM);
 
   static ExecutionEngine *(*OrcMCJITReplacementCtor)(
-      std::string *ErrorStr, std::shared_ptr<MCJITMemoryManager> MM,
-      std::shared_ptr<LegacyJITSymbolResolver> SR,
-      std::unique_ptr<TargetMachine> TM);
+                                std::string *ErrorStr,
+                                std::shared_ptr<MCJITMemoryManager> MM,
+                                std::shared_ptr<JITSymbolResolver> SR,
+                                std::unique_ptr<TargetMachine> TM);
 
   static ExecutionEngine *(*InterpCtor)(std::unique_ptr<Module> M,
                                         std::string *ErrorStr);
@@ -530,7 +532,7 @@ private:
   std::string *ErrorStr;
   CodeGenOpt::Level OptLevel;
   std::shared_ptr<MCJITMemoryManager> MemMgr;
-  std::shared_ptr<LegacyJITSymbolResolver> Resolver;
+  std::shared_ptr<JITSymbolResolver> Resolver;
   TargetOptions Options;
   Optional<Reloc::Model> RelocModel;
   Optional<CodeModel::Model> CMModel;
@@ -539,7 +541,6 @@ private:
   SmallVector<std::string, 4> MAttrs;
   bool VerifyModules;
   bool UseOrcMCJITReplacement;
-  bool EmulatedTLS = true;
 
 public:
   /// Default constructor for EngineBuilder.
@@ -569,7 +570,8 @@ public:
   EngineBuilder&
   setMemoryManager(std::unique_ptr<MCJITMemoryManager> MM);
 
-  EngineBuilder &setSymbolResolver(std::unique_ptr<LegacyJITSymbolResolver> SR);
+  EngineBuilder&
+  setSymbolResolver(std::unique_ptr<JITSymbolResolver> SR);
 
   /// setErrorStr - Set the error string to write to on error.  This option
   /// defaults to NULL.
@@ -639,10 +641,6 @@ public:
     this->UseOrcMCJITReplacement = UseOrcMCJITReplacement;
   }
 
-  void setEmulatedTLS(bool EmulatedTLS) {
-    this->EmulatedTLS = EmulatedTLS;
-  }
-  
   TargetMachine *selectTarget();
 
   /// selectTarget - Pick a target either via -march or by guessing the native

@@ -23,10 +23,6 @@ void AMDGPUFlatWorkGroupSizeAttr::printPretty(raw_ostream &OS, const PrintingPol
     OS << " __attribute__((amdgpu_flat_work_group_size(" << getMin() << ", " << getMax() << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::amdgpu_flat_work_group_size(" << getMin() << ", " << getMax() << ")]]";
-    break;
-  }
 }
 }
 
@@ -36,8 +32,6 @@ const char *AMDGPUFlatWorkGroupSizeAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "amdgpu_flat_work_group_size";
-  case 1:
     return "amdgpu_flat_work_group_size";
   }
 }
@@ -59,10 +53,6 @@ void AMDGPUNumSGPRAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Polic
     OS << " __attribute__((amdgpu_num_sgpr(" << getNumSGPR() << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::amdgpu_num_sgpr(" << getNumSGPR() << ")]]";
-    break;
-  }
 }
 }
 
@@ -72,8 +62,6 @@ const char *AMDGPUNumSGPRAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "amdgpu_num_sgpr";
-  case 1:
     return "amdgpu_num_sgpr";
   }
 }
@@ -95,10 +83,6 @@ void AMDGPUNumVGPRAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Polic
     OS << " __attribute__((amdgpu_num_vgpr(" << getNumVGPR() << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::amdgpu_num_vgpr(" << getNumVGPR() << ")]]";
-    break;
-  }
 }
 }
 
@@ -108,8 +92,6 @@ const char *AMDGPUNumVGPRAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "amdgpu_num_vgpr";
-  case 1:
     return "amdgpu_num_vgpr";
   }
 }
@@ -131,10 +113,6 @@ void AMDGPUWavesPerEUAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Po
     OS << " __attribute__((amdgpu_waves_per_eu(" << getMin() << ", " << getMax() << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::amdgpu_waves_per_eu(" << getMin() << ", " << getMax() << ")]]";
-    break;
-  }
 }
 }
 
@@ -144,8 +122,6 @@ const char *AMDGPUWavesPerEUAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "amdgpu_waves_per_eu";
-  case 1:
     return "amdgpu_waves_per_eu";
   }
 }
@@ -592,103 +568,38 @@ void AlignedAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) con
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((aligned";
-    unsigned TrailingOmittedArgs = 0;
-    if (!isalignmentExpr || !alignmentExpr)
-      ++TrailingOmittedArgs;
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << "(";
-    OS << "";
-    if (!(!isalignmentExpr || !alignmentExpr)) {
-      OS << "";
-    alignmentExpr->printPretty(OS, nullptr, Policy);
-    OS << "";
-    }
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << ")";
-    OS << "))";
+    OS << " __attribute__((aligned(";
+    if (isalignmentExpr && alignmentExpr)
+      alignmentExpr->printPretty(OS, nullptr, Policy);
+    OS << ")))";
     break;
   }
   case 1 : {
-    OS << " [[gnu::aligned";
-    unsigned TrailingOmittedArgs = 0;
-    if (!isalignmentExpr || !alignmentExpr)
-      ++TrailingOmittedArgs;
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << "(";
-    OS << "";
-    if (!(!isalignmentExpr || !alignmentExpr)) {
-      OS << "";
-    alignmentExpr->printPretty(OS, nullptr, Policy);
-    OS << "";
-    }
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << ")";
-    OS << "]]";
+    OS << " [[gnu::aligned(";
+    if (isalignmentExpr && alignmentExpr)
+      alignmentExpr->printPretty(OS, nullptr, Policy);
+    OS << ")]]";
     break;
   }
   case 2 : {
-    OS << " __declspec(align";
-    unsigned TrailingOmittedArgs = 0;
-    if (!isalignmentExpr || !alignmentExpr)
-      ++TrailingOmittedArgs;
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << "(";
-    OS << "";
-    if (!(!isalignmentExpr || !alignmentExpr)) {
-      OS << "";
-    alignmentExpr->printPretty(OS, nullptr, Policy);
-    OS << "";
-    }
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << ")";
-    OS << ")";
+    OS << " __declspec(align(";
+    if (isalignmentExpr && alignmentExpr)
+      alignmentExpr->printPretty(OS, nullptr, Policy);
+    OS << "))";
     break;
   }
   case 3 : {
-    OS << " alignas";
-    unsigned TrailingOmittedArgs = 0;
-    if (!isalignmentExpr || !alignmentExpr)
-      ++TrailingOmittedArgs;
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << "(";
-    OS << "";
-    if (!(!isalignmentExpr || !alignmentExpr)) {
-      OS << "";
-    alignmentExpr->printPretty(OS, nullptr, Policy);
-    OS << "";
-    }
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << ")";
-    OS << "";
+    OS << " alignas(";
+    if (isalignmentExpr && alignmentExpr)
+      alignmentExpr->printPretty(OS, nullptr, Policy);
+    OS << ")";
     break;
   }
   case 4 : {
-    OS << " _Alignas";
-    unsigned TrailingOmittedArgs = 0;
-    if (!isalignmentExpr || !alignmentExpr)
-      ++TrailingOmittedArgs;
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << "(";
-    OS << "";
-    if (!(!isalignmentExpr || !alignmentExpr)) {
-      OS << "";
-    alignmentExpr->printPretty(OS, nullptr, Policy);
-    OS << "";
-    }
-    OS << "";
-    if (TrailingOmittedArgs < 1)
-       OS << ")";
-    OS << "";
+    OS << " _Alignas(";
+    if (isalignmentExpr && alignmentExpr)
+      alignmentExpr->printPretty(OS, nullptr, Policy);
+    OS << ")";
     break;
   }
 }
@@ -713,7 +624,7 @@ const char *AlignedAttr::getSpelling() const {
 }
 
 AllocAlignAttr *AllocAlignAttr::clone(ASTContext &C) const {
-  auto *A = new (C) AllocAlignAttr(getLocation(), C, ParamIndex, getSpellingListIndex());
+  auto *A = new (C) AllocAlignAttr(getLocation(), C, paramIndex, getSpellingListIndex());
   A->Inherited = Inherited;
   A->IsPackExpansion = IsPackExpansion;
   A->Implicit = Implicit;
@@ -726,11 +637,11 @@ void AllocAlignAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((alloc_align(" << ParamIndex.getSourceIndex() << ")))";
+    OS << " __attribute__((alloc_align(" << getParamIndex() << ")))";
     break;
   }
   case 1 : {
-    OS << " [[gnu::alloc_align(" << ParamIndex.getSourceIndex() << ")]]";
+    OS << " [[gnu::alloc_align(" << getParamIndex() << ")]]";
     break;
   }
 }
@@ -749,7 +660,7 @@ const char *AllocAlignAttr::getSpelling() const {
 }
 
 AllocSizeAttr *AllocSizeAttr::clone(ASTContext &C) const {
-  auto *A = new (C) AllocSizeAttr(getLocation(), C, ElemSizeParam, NumElemsParam, getSpellingListIndex());
+  auto *A = new (C) AllocSizeAttr(getLocation(), C, elemSizeParam, numElemsParam, getSpellingListIndex());
   A->Inherited = Inherited;
   A->IsPackExpansion = IsPackExpansion;
   A->Implicit = Implicit;
@@ -762,33 +673,11 @@ void AllocSizeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) c
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((alloc_size";
-    unsigned TrailingOmittedArgs = 0;
-    if (!NumElemsParam.isValid())
-      ++TrailingOmittedArgs;
-    OS << "(" << ElemSizeParam.getSourceIndex() << "";
-    if (1 < 2 - TrailingOmittedArgs)
-      OS << ", ";
-    OS << "";
-    if (!(!NumElemsParam.isValid())) {
-      OS << "" << NumElemsParam.getSourceIndex() << "";
-    }
-    OS << ")))";
+    OS << " __attribute__((alloc_size(" << getElemSizeParam() << ", " << getNumElemsParam() << ")))";
     break;
   }
   case 1 : {
-    OS << " [[gnu::alloc_size";
-    unsigned TrailingOmittedArgs = 0;
-    if (!NumElemsParam.isValid())
-      ++TrailingOmittedArgs;
-    OS << "(" << ElemSizeParam.getSourceIndex() << "";
-    if (1 < 2 - TrailingOmittedArgs)
-      OS << ", ";
-    OS << "";
-    if (!(!NumElemsParam.isValid())) {
-      OS << "" << NumElemsParam.getSourceIndex() << "";
-    }
-    OS << ")]]";
+    OS << " [[gnu::alloc_size(" << getElemSizeParam() << ", " << getNumElemsParam() << ")]]";
     break;
   }
 }
@@ -895,14 +784,6 @@ void AnnotateAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) co
     OS << " __attribute__((annotate(\"" << getAnnotation() << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::annotate(\"" << getAnnotation() << "\")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::annotate(\"" << getAnnotation() << "\")]]";
-    break;
-  }
 }
 }
 
@@ -912,10 +793,6 @@ const char *AnnotateAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "annotate";
-  case 1:
-    return "annotate";
-  case 2:
     return "annotate";
   }
 }
@@ -1009,14 +886,6 @@ void ArcWeakrefUnavailableAttr::printPretty(raw_ostream &OS, const PrintingPolic
     OS << " __attribute__((objc_arc_weak_reference_unavailable))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_arc_weak_reference_unavailable]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_arc_weak_reference_unavailable]]";
-    break;
-  }
 }
 }
 
@@ -1027,15 +896,11 @@ const char *ArcWeakrefUnavailableAttr::getSpelling() const {
     return "(No spelling)";
   case 0:
     return "objc_arc_weak_reference_unavailable";
-  case 1:
-    return "objc_arc_weak_reference_unavailable";
-  case 2:
-    return "objc_arc_weak_reference_unavailable";
   }
 }
 
 ArgumentWithTypeTagAttr *ArgumentWithTypeTagAttr::clone(ASTContext &C) const {
-  auto *A = new (C) ArgumentWithTypeTagAttr(getLocation(), C, argumentKind, ArgumentIdx, TypeTagIdx, isPointer, getSpellingListIndex());
+  auto *A = new (C) ArgumentWithTypeTagAttr(getLocation(), C, argumentKind, argumentIdx, typeTagIdx, isPointer, getSpellingListIndex());
   A->Inherited = Inherited;
   A->IsPackExpansion = IsPackExpansion;
   A->Implicit = Implicit;
@@ -1048,27 +913,15 @@ void ArgumentWithTypeTagAttr::printPretty(raw_ostream &OS, const PrintingPolicy 
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((argument_with_type_tag(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << ArgumentIdx.getSourceIndex() << ", " << TypeTagIdx.getSourceIndex() << ")))";
+    OS << " __attribute__((argument_with_type_tag(";
+    OS << getArgumentKind()->getName();
+    OS << ", " << getArgumentIdx() << ", " << getTypeTagIdx() << ", " << getIsPointer() << ")))";
     break;
   }
   case 1 : {
-    OS << " [[clang::argument_with_type_tag(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << ArgumentIdx.getSourceIndex() << ", " << TypeTagIdx.getSourceIndex() << ")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::argument_with_type_tag(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << ArgumentIdx.getSourceIndex() << ", " << TypeTagIdx.getSourceIndex() << ")]]";
-    break;
-  }
-  case 3 : {
-    OS << " __attribute__((pointer_with_type_tag(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << ArgumentIdx.getSourceIndex() << ", " << TypeTagIdx.getSourceIndex() << ")))";
-    break;
-  }
-  case 4 : {
-    OS << " [[clang::pointer_with_type_tag(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << ArgumentIdx.getSourceIndex() << ", " << TypeTagIdx.getSourceIndex() << ")]]";
-    break;
-  }
-  case 5 : {
-    OS << " [[clang::pointer_with_type_tag(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << ArgumentIdx.getSourceIndex() << ", " << TypeTagIdx.getSourceIndex() << ")]]";
+    OS << " __attribute__((pointer_with_type_tag(";
+    OS << getArgumentKind()->getName();
+    OS << ", " << getArgumentIdx() << ", " << getTypeTagIdx() << ", " << getIsPointer() << ")))";
     break;
   }
 }
@@ -1082,51 +935,7 @@ const char *ArgumentWithTypeTagAttr::getSpelling() const {
   case 0:
     return "argument_with_type_tag";
   case 1:
-    return "argument_with_type_tag";
-  case 2:
-    return "argument_with_type_tag";
-  case 3:
     return "pointer_with_type_tag";
-  case 4:
-    return "pointer_with_type_tag";
-  case 5:
-    return "pointer_with_type_tag";
-  }
-}
-
-ArtificialAttr *ArtificialAttr::clone(ASTContext &C) const {
-  auto *A = new (C) ArtificialAttr(getLocation(), C, getSpellingListIndex());
-  A->Inherited = Inherited;
-  A->IsPackExpansion = IsPackExpansion;
-  A->Implicit = Implicit;
-  return A;
-}
-
-void ArtificialAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
-  switch (SpellingListIndex) {
-  default:
-    llvm_unreachable("Unknown attribute spelling!");
-    break;
-  case 0 : {
-    OS << " __attribute__((artificial))";
-    break;
-  }
-  case 1 : {
-    OS << " [[gnu::artificial]]";
-    break;
-  }
-}
-}
-
-const char *ArtificialAttr::getSpelling() const {
-  switch (SpellingListIndex) {
-  default:
-    llvm_unreachable("Unknown attribute spelling!");
-    return "(No spelling)";
-  case 0:
-    return "artificial";
-  case 1:
-    return "artificial";
   }
 }
 
@@ -1375,14 +1184,6 @@ void AvailabilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
   OS << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::availability(" << (getPlatform() ? getPlatform()->getName() : "") << ", introduced=" << getIntroduced() << ", deprecated=" << getDeprecated() << ", obsoleted=" << getObsoleted() << ", " << getUnavailable() << ", \"" << getMessage() << "\", " << getStrict() << ", \"" << getReplacement() << "\")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::availability(" << (getPlatform() ? getPlatform()->getName() : "") << ", introduced=" << getIntroduced() << ", deprecated=" << getDeprecated() << ", obsoleted=" << getObsoleted() << ", " << getUnavailable() << ", \"" << getMessage() << "\", " << getStrict() << ", \"" << getReplacement() << "\")]]";
-    break;
-  }
 }
 }
 
@@ -1392,10 +1193,6 @@ const char *AvailabilityAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "availability";
-  case 1:
-    return "availability";
-  case 2:
     return "availability";
   }
 }
@@ -1417,14 +1214,6 @@ void BlocksAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) cons
     OS << " __attribute__((blocks(\"" << BlocksAttr::ConvertBlockTypeToStr(getType()) << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::blocks(\"" << BlocksAttr::ConvertBlockTypeToStr(getType()) << "\")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::blocks(\"" << BlocksAttr::ConvertBlockTypeToStr(getType()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -1434,10 +1223,6 @@ const char *BlocksAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "blocks";
-  case 1:
-    return "blocks";
-  case 2:
     return "blocks";
   }
 }
@@ -1537,14 +1322,6 @@ void CFAuditedTransferAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     OS << " __attribute__((cf_audited_transfer))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::cf_audited_transfer]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::cf_audited_transfer]]";
-    break;
-  }
 }
 }
 
@@ -1554,10 +1331,6 @@ const char *CFAuditedTransferAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "cf_audited_transfer";
-  case 1:
-    return "cf_audited_transfer";
-  case 2:
     return "cf_audited_transfer";
   }
 }
@@ -1579,14 +1352,6 @@ void CFConsumedAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     OS << " __attribute__((cf_consumed))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::cf_consumed]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::cf_consumed]]";
-    break;
-  }
 }
 }
 
@@ -1596,10 +1361,6 @@ const char *CFConsumedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "cf_consumed";
-  case 1:
-    return "cf_consumed";
-  case 2:
     return "cf_consumed";
   }
 }
@@ -1621,14 +1382,6 @@ void CFReturnsNotRetainedAttr::printPretty(raw_ostream &OS, const PrintingPolicy
     OS << " __attribute__((cf_returns_not_retained))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::cf_returns_not_retained]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::cf_returns_not_retained]]";
-    break;
-  }
 }
 }
 
@@ -1638,10 +1391,6 @@ const char *CFReturnsNotRetainedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "cf_returns_not_retained";
-  case 1:
-    return "cf_returns_not_retained";
-  case 2:
     return "cf_returns_not_retained";
   }
 }
@@ -1663,14 +1412,6 @@ void CFReturnsRetainedAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     OS << " __attribute__((cf_returns_retained))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::cf_returns_retained]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::cf_returns_retained]]";
-    break;
-  }
 }
 }
 
@@ -1680,10 +1421,6 @@ const char *CFReturnsRetainedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "cf_returns_retained";
-  case 1:
-    return "cf_returns_retained";
-  case 2:
     return "cf_returns_retained";
   }
 }
@@ -1705,14 +1442,6 @@ void CFUnknownTransferAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     OS << " __attribute__((cf_unknown_transfer))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::cf_unknown_transfer]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::cf_unknown_transfer]]";
-    break;
-  }
 }
 }
 
@@ -1722,10 +1451,6 @@ const char *CFUnknownTransferAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "cf_unknown_transfer";
-  case 1:
-    return "cf_unknown_transfer";
-  case 2:
     return "cf_unknown_transfer";
   }
 }
@@ -2015,17 +1740,6 @@ void CallableWhenAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
   OS << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::callable_when(";
-  bool isFirst = true;
-  for (const auto &Val : callableStates()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << "\"" << CallableWhenAttr::ConvertConsumedStateToStr(Val)<< "\"";
-  }
-  OS << ")]]";
-    break;
-  }
 }
 }
 
@@ -2035,8 +1749,6 @@ const char *CallableWhenAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "callable_when";
-  case 1:
     return "callable_when";
   }
 }
@@ -2349,10 +2061,6 @@ void ConsumableAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     OS << " __attribute__((consumable(\"" << ConsumableAttr::ConvertConsumedStateToStr(getDefaultState()) << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::consumable(\"" << ConsumableAttr::ConvertConsumedStateToStr(getDefaultState()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -2362,8 +2070,6 @@ const char *ConsumableAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "consumable";
-  case 1:
     return "consumable";
   }
 }
@@ -2385,10 +2091,6 @@ void ConsumableAutoCastAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
     OS << " __attribute__((consumable_auto_cast_state))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::consumable_auto_cast_state]]";
-    break;
-  }
 }
 }
 
@@ -2398,8 +2100,6 @@ const char *ConsumableAutoCastAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "consumable_auto_cast_state";
-  case 1:
     return "consumable_auto_cast_state";
   }
 }
@@ -2421,10 +2121,6 @@ void ConsumableSetOnReadAttr::printPretty(raw_ostream &OS, const PrintingPolicy 
     OS << " __attribute__((consumable_set_state_on_read))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::consumable_set_state_on_read]]";
-    break;
-  }
 }
 }
 
@@ -2434,8 +2130,6 @@ const char *ConsumableSetOnReadAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "consumable_set_state_on_read";
-  case 1:
     return "consumable_set_state_on_read";
   }
 }
@@ -2461,10 +2155,6 @@ void ConvergentAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     OS << " [[clang::convergent]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::convergent]]";
-    break;
-  }
 }
 }
 
@@ -2476,8 +2166,6 @@ const char *ConvergentAttr::getSpelling() const {
   case 0:
     return "convergent";
   case 1:
-    return "convergent";
-  case 2:
     return "convergent";
   }
 }
@@ -2713,10 +2401,6 @@ void DisableTailCallsAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Po
     OS << " [[clang::disable_tail_calls]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::disable_tail_calls]]";
-    break;
-  }
 }
 }
 
@@ -2728,8 +2412,6 @@ const char *DisableTailCallsAttr::getSpelling() const {
   case 0:
     return "disable_tail_calls";
   case 1:
-    return "disable_tail_calls";
-  case 2:
     return "disable_tail_calls";
   }
 }
@@ -2815,10 +2497,6 @@ void EnumExtensibilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     OS << " [[clang::enum_extensibility(\"" << EnumExtensibilityAttr::ConvertKindToStr(getExtensibility()) << "\")]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::enum_extensibility(\"" << EnumExtensibilityAttr::ConvertKindToStr(getExtensibility()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -2830,8 +2508,6 @@ const char *EnumExtensibilityAttr::getSpelling() const {
   case 0:
     return "enum_extensibility";
   case 1:
-    return "enum_extensibility";
-  case 2:
     return "enum_extensibility";
   }
 }
@@ -2894,10 +2570,6 @@ void ExternalSourceSymbolAttr::printPretty(raw_ostream &OS, const PrintingPolicy
     OS << " [[clang::external_source_symbol(\"" << getLanguage() << "\", \"" << getDefinedIn() << "\", " << getGeneratedDeclaration() << ")]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::external_source_symbol(\"" << getLanguage() << "\", \"" << getDefinedIn() << "\", " << getGeneratedDeclaration() << ")]]";
-    break;
-  }
 }
 }
 
@@ -2909,8 +2581,6 @@ const char *ExternalSourceSymbolAttr::getSpelling() const {
   case 0:
     return "external_source_symbol";
   case 1:
-    return "external_source_symbol";
-  case 2:
     return "external_source_symbol";
   }
 }
@@ -3058,14 +2728,6 @@ void FlagEnumAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) co
     OS << " __attribute__((flag_enum))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::flag_enum]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::flag_enum]]";
-    break;
-  }
 }
 }
 
@@ -3075,10 +2737,6 @@ const char *FlagEnumAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "flag_enum";
-  case 1:
-    return "flag_enum";
-  case 2:
     return "flag_enum";
   }
 }
@@ -3133,11 +2791,15 @@ void FormatAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) cons
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((format(" << (getType() ? getType()->getName() : "") << ", " << getFormatIdx() << ", " << getFirstArg() << ")))";
+    OS << " __attribute__((format(";
+    OS << getType()->getName();
+    OS << ", " << getFormatIdx() << ", " << getFirstArg() << ")))";
     break;
   }
   case 1 : {
-    OS << " [[gnu::format(" << (getType() ? getType()->getName() : "") << ", " << getFormatIdx() << ", " << getFirstArg() << ")]]";
+    OS << " [[gnu::format(";
+    OS << getType()->getName();
+    OS << ", " << getFormatIdx() << ", " << getFirstArg() << ")]]";
     break;
   }
 }
@@ -3156,7 +2818,7 @@ const char *FormatAttr::getSpelling() const {
 }
 
 FormatArgAttr *FormatArgAttr::clone(ASTContext &C) const {
-  auto *A = new (C) FormatArgAttr(getLocation(), C, FormatIdx, getSpellingListIndex());
+  auto *A = new (C) FormatArgAttr(getLocation(), C, formatIdx, getSpellingListIndex());
   A->Inherited = Inherited;
   A->IsPackExpansion = IsPackExpansion;
   A->Implicit = Implicit;
@@ -3169,11 +2831,11 @@ void FormatArgAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) c
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((format_arg(" << FormatIdx.getSourceIndex() << ")))";
+    OS << " __attribute__((format_arg(" << getFormatIdx() << ")))";
     break;
   }
   case 1 : {
-    OS << " [[gnu::format_arg(" << FormatIdx.getSourceIndex() << ")]]";
+    OS << " [[gnu::format_arg(" << getFormatIdx() << ")]]";
     break;
   }
 }
@@ -3274,10 +2936,6 @@ void GuardedVarAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     OS << " __attribute__((guarded_var))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::guarded_var]]";
-    break;
-  }
 }
 }
 
@@ -3287,8 +2945,6 @@ const char *GuardedVarAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "guarded_var";
-  case 1:
     return "guarded_var";
   }
 }
@@ -3346,14 +3002,6 @@ void IBActionAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) co
     OS << " __attribute__((ibaction))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::ibaction]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::ibaction]]";
-    break;
-  }
 }
 }
 
@@ -3363,10 +3011,6 @@ const char *IBActionAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "ibaction";
-  case 1:
-    return "ibaction";
-  case 2:
     return "ibaction";
   }
 }
@@ -3388,14 +3032,6 @@ void IBOutletAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) co
     OS << " __attribute__((iboutlet))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::iboutlet]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::iboutlet]]";
-    break;
-  }
 }
 }
 
@@ -3405,10 +3041,6 @@ const char *IBOutletAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "iboutlet";
-  case 1:
-    return "iboutlet";
-  case 2:
     return "iboutlet";
   }
 }
@@ -3430,14 +3062,6 @@ void IBOutletCollectionAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
     OS << " __attribute__((iboutletcollection(" << getInterface().getAsString() << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::iboutletcollection(" << getInterface().getAsString() << ")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::iboutletcollection(" << getInterface().getAsString() << ")]]";
-    break;
-  }
 }
 }
 
@@ -3447,10 +3071,6 @@ const char *IBOutletCollectionAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "iboutletcollection";
-  case 1:
-    return "iboutletcollection";
-  case 2:
     return "iboutletcollection";
   }
 }
@@ -3541,7 +3161,7 @@ void InitSegAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) con
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << "#pragma init_seg";
+    OS << "#pragma init_seg ";
     printPrettyPragma(OS, Policy);
     OS << "\n";    break;
   }
@@ -3575,10 +3195,6 @@ void IntelOclBiccAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " __attribute__((intel_ocl_bicc))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::intel_ocl_bicc]]";
-    break;
-  }
 }
 }
 
@@ -3588,8 +3204,6 @@ const char *IntelOclBiccAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "intel_ocl_bicc";
-  case 1:
     return "intel_ocl_bicc";
   }
 }
@@ -3615,10 +3229,6 @@ void InternalLinkageAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Pol
     OS << " [[clang::internal_linkage]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::internal_linkage]]";
-    break;
-  }
 }
 }
 
@@ -3630,8 +3240,6 @@ const char *InternalLinkageAttr::getSpelling() const {
   case 0:
     return "internal_linkage";
   case 1:
-    return "internal_linkage";
-  case 2:
     return "internal_linkage";
   }
 }
@@ -3650,14 +3258,6 @@ void LTOVisibilityPublicAttr::printPretty(raw_ostream &OS, const PrintingPolicy 
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((lto_visibility_public))";
-    break;
-  }
-  case 1 : {
-    OS << " [[clang::lto_visibility_public]]";
-    break;
-  }
-  case 2 : {
     OS << " [[clang::lto_visibility_public]]";
     break;
   }
@@ -3670,10 +3270,6 @@ const char *LTOVisibilityPublicAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "lto_visibility_public";
-  case 1:
-    return "lto_visibility_public";
-  case 2:
     return "lto_visibility_public";
   }
 }
@@ -3789,17 +3385,17 @@ void LoopHintAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) co
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << "#pragma clang loop";
+    OS << "#pragma clang loop ";
     printPrettyPragma(OS, Policy);
     OS << "\n";    break;
   }
   case 1 : {
-    OS << "#pragma unroll";
+    OS << "#pragma unroll ";
     printPrettyPragma(OS, Policy);
     OS << "\n";    break;
   }
   case 2 : {
-    OS << "#pragma nounroll";
+    OS << "#pragma nounroll ";
     printPrettyPragma(OS, Policy);
     OS << "\n";    break;
   }
@@ -4125,14 +3721,6 @@ void MinSizeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) con
     OS << " __attribute__((minsize))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::minsize]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::minsize]]";
-    break;
-  }
 }
 }
 
@@ -4142,10 +3730,6 @@ const char *MinSizeAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "minsize";
-  case 1:
-    return "minsize";
-  case 2:
     return "minsize";
   }
 }
@@ -4332,11 +3916,15 @@ void ModeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const 
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((mode(" << (getMode() ? getMode()->getName() : "") << ")))";
+    OS << " __attribute__((mode(";
+    OS << getMode()->getName();
+    OS << ")))";
     break;
   }
   case 1 : {
-    OS << " [[gnu::mode(" << (getMode() ? getMode()->getName() : "") << ")]]";
+    OS << " [[gnu::mode(";
+    OS << getMode()->getName();
+    OS << ")]]";
     break;
   }
 }
@@ -4371,14 +3959,6 @@ void NSConsumedAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     OS << " __attribute__((ns_consumed))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::ns_consumed]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::ns_consumed]]";
-    break;
-  }
 }
 }
 
@@ -4388,10 +3968,6 @@ const char *NSConsumedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "ns_consumed";
-  case 1:
-    return "ns_consumed";
-  case 2:
     return "ns_consumed";
   }
 }
@@ -4413,14 +3989,6 @@ void NSConsumesSelfAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Poli
     OS << " __attribute__((ns_consumes_self))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::ns_consumes_self]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::ns_consumes_self]]";
-    break;
-  }
 }
 }
 
@@ -4430,10 +3998,6 @@ const char *NSConsumesSelfAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "ns_consumes_self";
-  case 1:
-    return "ns_consumes_self";
-  case 2:
     return "ns_consumes_self";
   }
 }
@@ -4455,14 +4019,6 @@ void NSReturnsAutoreleasedAttr::printPretty(raw_ostream &OS, const PrintingPolic
     OS << " __attribute__((ns_returns_autoreleased))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::ns_returns_autoreleased]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::ns_returns_autoreleased]]";
-    break;
-  }
 }
 }
 
@@ -4472,10 +4028,6 @@ const char *NSReturnsAutoreleasedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "ns_returns_autoreleased";
-  case 1:
-    return "ns_returns_autoreleased";
-  case 2:
     return "ns_returns_autoreleased";
   }
 }
@@ -4497,14 +4049,6 @@ void NSReturnsNotRetainedAttr::printPretty(raw_ostream &OS, const PrintingPolicy
     OS << " __attribute__((ns_returns_not_retained))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::ns_returns_not_retained]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::ns_returns_not_retained]]";
-    break;
-  }
 }
 }
 
@@ -4514,10 +4058,6 @@ const char *NSReturnsNotRetainedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "ns_returns_not_retained";
-  case 1:
-    return "ns_returns_not_retained";
-  case 2:
     return "ns_returns_not_retained";
   }
 }
@@ -4539,14 +4079,6 @@ void NSReturnsRetainedAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     OS << " __attribute__((ns_returns_retained))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::ns_returns_retained]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::ns_returns_retained]]";
-    break;
-  }
 }
 }
 
@@ -4556,10 +4088,6 @@ const char *NSReturnsRetainedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "ns_returns_retained";
-  case 1:
-    return "ns_returns_retained";
-  case 2:
     return "ns_returns_retained";
   }
 }
@@ -4729,10 +4257,6 @@ void NoDuplicateAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy)
     OS << " [[clang::noduplicate]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::noduplicate]]";
-    break;
-  }
 }
 }
 
@@ -4744,8 +4268,6 @@ const char *NoDuplicateAttr::getSpelling() const {
   case 0:
     return "noduplicate";
   case 1:
-    return "noduplicate";
-  case 2:
     return "noduplicate";
   }
 }
@@ -4771,10 +4293,6 @@ void NoEscapeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) co
     OS << " [[clang::noescape]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::noescape]]";
-    break;
-  }
 }
 }
 
@@ -4786,8 +4304,6 @@ const char *NoEscapeAttr::getSpelling() const {
   case 0:
     return "noescape";
   case 1:
-    return "noescape";
-  case 2:
     return "noescape";
   }
 }
@@ -5019,17 +4535,6 @@ void NoSanitizeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
   OS << ")]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::no_sanitize(";
-  bool isFirst = true;
-  for (const auto &Val : sanitizers()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << "\"" << Val << "\"";
-  }
-  OS << ")]]";
-    break;
-  }
 }
 }
 
@@ -5041,8 +4546,6 @@ const char *NoSanitizeAttr::getSpelling() const {
   case 0:
     return "no_sanitize";
   case 1:
-    return "no_sanitize";
-  case 2:
     return "no_sanitize";
   }
 }
@@ -5100,14 +4603,6 @@ void NoThreadSafetyAnalysisAttr::printPretty(raw_ostream &OS, const PrintingPoli
     OS << " __attribute__((no_thread_safety_analysis))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::no_thread_safety_analysis]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::no_thread_safety_analysis]]";
-    break;
-  }
 }
 }
 
@@ -5117,10 +4612,6 @@ const char *NoThreadSafetyAnalysisAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "no_thread_safety_analysis";
-  case 1:
-    return "no_thread_safety_analysis";
-  case 2:
     return "no_thread_safety_analysis";
   }
 }
@@ -5186,7 +4677,7 @@ void NonNullAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) con
   for (const auto &Val : args()) {
     if (isFirst) isFirst = false;
     else OS << ", ";
-    OS << Val.getSourceIndex();
+    OS << Val;
   }
   OS << ")))";
     break;
@@ -5197,7 +4688,7 @@ void NonNullAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) con
   for (const auto &Val : args()) {
     if (isFirst) isFirst = false;
     else OS << ", ";
-    OS << Val.getSourceIndex();
+    OS << Val;
   }
   OS << ")]]";
     break;
@@ -5238,10 +4729,6 @@ void NotTailCalledAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Polic
     OS << " [[clang::not_tail_called]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::not_tail_called]]";
-    break;
-  }
 }
 }
 
@@ -5253,8 +4740,6 @@ const char *NotTailCalledAttr::getSpelling() const {
   case 0:
     return "not_tail_called";
   case 1:
-    return "not_tail_called";
-  case 2:
     return "not_tail_called";
   }
 }
@@ -5303,7 +4788,7 @@ void OMPDeclareSimdDeclAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << "#pragma omp declare simd";
+    OS << "#pragma omp declare simd ";
     printPrettyPragma(OS, Policy);
     OS << "\n";    break;
   }
@@ -5334,7 +4819,7 @@ void OMPDeclareTargetDeclAttr::printPretty(raw_ostream &OS, const PrintingPolicy
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << "#pragma omp declare target";
+    OS << "#pragma omp declare target ";
     printPrettyPragma(OS, Policy);
     OS << "\n";    break;
   }
@@ -5383,14 +4868,6 @@ void ObjCBoxableAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy)
     OS << " __attribute__((objc_boxable))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_boxable]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_boxable]]";
-    break;
-  }
 }
 }
 
@@ -5400,10 +4877,6 @@ const char *ObjCBoxableAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_boxable";
-  case 1:
-    return "objc_boxable";
-  case 2:
     return "objc_boxable";
   }
 }
@@ -5422,15 +4895,9 @@ void ObjCBridgeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((objc_bridge(" << (getBridgedType() ? getBridgedType()->getName() : "") << ")))";
-    break;
-  }
-  case 1 : {
-    OS << " [[clang::objc_bridge(" << (getBridgedType() ? getBridgedType()->getName() : "") << ")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_bridge(" << (getBridgedType() ? getBridgedType()->getName() : "") << ")]]";
+    OS << " __attribute__((objc_bridge(";
+    OS << getBridgedType()->getName();
+    OS << ")))";
     break;
   }
 }
@@ -5442,10 +4909,6 @@ const char *ObjCBridgeAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_bridge";
-  case 1:
-    return "objc_bridge";
-  case 2:
     return "objc_bridge";
   }
 }
@@ -5464,15 +4927,9 @@ void ObjCBridgeMutableAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((objc_bridge_mutable(" << (getBridgedType() ? getBridgedType()->getName() : "") << ")))";
-    break;
-  }
-  case 1 : {
-    OS << " [[clang::objc_bridge_mutable(" << (getBridgedType() ? getBridgedType()->getName() : "") << ")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_bridge_mutable(" << (getBridgedType() ? getBridgedType()->getName() : "") << ")]]";
+    OS << " __attribute__((objc_bridge_mutable(";
+    OS << getBridgedType()->getName();
+    OS << ")))";
     break;
   }
 }
@@ -5484,10 +4941,6 @@ const char *ObjCBridgeMutableAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_bridge_mutable";
-  case 1:
-    return "objc_bridge_mutable";
-  case 2:
     return "objc_bridge_mutable";
   }
 }
@@ -5506,15 +4959,13 @@ void ObjCBridgeRelatedAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((objc_bridge_related(" << (getRelatedClass() ? getRelatedClass()->getName() : "") << ", " << (getClassMethod() ? getClassMethod()->getName() : "") << ", " << (getInstanceMethod() ? getInstanceMethod()->getName() : "") << ")))";
-    break;
-  }
-  case 1 : {
-    OS << " [[clang::objc_bridge_related(" << (getRelatedClass() ? getRelatedClass()->getName() : "") << ", " << (getClassMethod() ? getClassMethod()->getName() : "") << ", " << (getInstanceMethod() ? getInstanceMethod()->getName() : "") << ")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_bridge_related(" << (getRelatedClass() ? getRelatedClass()->getName() : "") << ", " << (getClassMethod() ? getClassMethod()->getName() : "") << ", " << (getInstanceMethod() ? getInstanceMethod()->getName() : "") << ")]]";
+    OS << " __attribute__((objc_bridge_related(";
+    OS << getRelatedClass()->getName();
+    OS << ", ";
+    if (getClassMethod()) OS << getClassMethod()->getName();
+    OS << ", ";
+    if (getInstanceMethod()) OS << getInstanceMethod()->getName();
+    OS << ")))";
     break;
   }
 }
@@ -5526,10 +4977,6 @@ const char *ObjCBridgeRelatedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_bridge_related";
-  case 1:
-    return "objc_bridge_related";
-  case 2:
     return "objc_bridge_related";
   }
 }
@@ -5551,14 +4998,6 @@ void ObjCDesignatedInitializerAttr::printPretty(raw_ostream &OS, const PrintingP
     OS << " __attribute__((objc_designated_initializer))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_designated_initializer]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_designated_initializer]]";
-    break;
-  }
 }
 }
 
@@ -5568,10 +5007,6 @@ const char *ObjCDesignatedInitializerAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_designated_initializer";
-  case 1:
-    return "objc_designated_initializer";
-  case 2:
     return "objc_designated_initializer";
   }
 }
@@ -5593,14 +5028,6 @@ void ObjCExceptionAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Polic
     OS << " __attribute__((objc_exception))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_exception]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_exception]]";
-    break;
-  }
 }
 }
 
@@ -5610,10 +5037,6 @@ const char *ObjCExceptionAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_exception";
-  case 1:
-    return "objc_exception";
-  case 2:
     return "objc_exception";
   }
 }
@@ -5635,14 +5058,6 @@ void ObjCExplicitProtocolImplAttr::printPretty(raw_ostream &OS, const PrintingPo
     OS << " __attribute__((objc_protocol_requires_explicit_implementation))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_protocol_requires_explicit_implementation]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_protocol_requires_explicit_implementation]]";
-    break;
-  }
 }
 }
 
@@ -5652,10 +5067,6 @@ const char *ObjCExplicitProtocolImplAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_protocol_requires_explicit_implementation";
-  case 1:
-    return "objc_protocol_requires_explicit_implementation";
-  case 2:
     return "objc_protocol_requires_explicit_implementation";
   }
 }
@@ -5677,14 +5088,6 @@ void ObjCIndependentClassAttr::printPretty(raw_ostream &OS, const PrintingPolicy
     OS << " __attribute__((objc_independent_class))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_independent_class]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_independent_class]]";
-    break;
-  }
 }
 }
 
@@ -5694,10 +5097,6 @@ const char *ObjCIndependentClassAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_independent_class";
-  case 1:
-    return "objc_independent_class";
-  case 2:
     return "objc_independent_class";
   }
 }
@@ -5719,14 +5118,6 @@ void ObjCMethodFamilyAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Po
     OS << " __attribute__((objc_method_family(\"" << ObjCMethodFamilyAttr::ConvertFamilyKindToStr(getFamily()) << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_method_family(\"" << ObjCMethodFamilyAttr::ConvertFamilyKindToStr(getFamily()) << "\")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_method_family(\"" << ObjCMethodFamilyAttr::ConvertFamilyKindToStr(getFamily()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -5736,10 +5127,6 @@ const char *ObjCMethodFamilyAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_method_family";
-  case 1:
-    return "objc_method_family";
-  case 2:
     return "objc_method_family";
   }
 }
@@ -5761,14 +5148,6 @@ void ObjCNSObjectAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " __attribute__((NSObject))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::NSObject]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::NSObject]]";
-    break;
-  }
 }
 }
 
@@ -5778,10 +5157,6 @@ const char *ObjCNSObjectAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "NSObject";
-  case 1:
-    return "NSObject";
-  case 2:
     return "NSObject";
   }
 }
@@ -5803,14 +5178,6 @@ void ObjCPreciseLifetimeAttr::printPretty(raw_ostream &OS, const PrintingPolicy 
     OS << " __attribute__((objc_precise_lifetime))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_precise_lifetime]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_precise_lifetime]]";
-    break;
-  }
 }
 }
 
@@ -5820,10 +5187,6 @@ const char *ObjCPreciseLifetimeAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_precise_lifetime";
-  case 1:
-    return "objc_precise_lifetime";
-  case 2:
     return "objc_precise_lifetime";
   }
 }
@@ -5845,14 +5208,6 @@ void ObjCRequiresPropertyDefsAttr::printPretty(raw_ostream &OS, const PrintingPo
     OS << " __attribute__((objc_requires_property_definitions))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_requires_property_definitions]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_requires_property_definitions]]";
-    break;
-  }
 }
 }
 
@@ -5862,10 +5217,6 @@ const char *ObjCRequiresPropertyDefsAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_requires_property_definitions";
-  case 1:
-    return "objc_requires_property_definitions";
-  case 2:
     return "objc_requires_property_definitions";
   }
 }
@@ -5887,14 +5238,6 @@ void ObjCRequiresSuperAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
     OS << " __attribute__((objc_requires_super))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_requires_super]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_requires_super]]";
-    break;
-  }
 }
 }
 
@@ -5904,10 +5247,6 @@ const char *ObjCRequiresSuperAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_requires_super";
-  case 1:
-    return "objc_requires_super";
-  case 2:
     return "objc_requires_super";
   }
 }
@@ -5929,14 +5268,6 @@ void ObjCReturnsInnerPointerAttr::printPretty(raw_ostream &OS, const PrintingPol
     OS << " __attribute__((objc_returns_inner_pointer))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_returns_inner_pointer]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_returns_inner_pointer]]";
-    break;
-  }
 }
 }
 
@@ -5946,10 +5277,6 @@ const char *ObjCReturnsInnerPointerAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_returns_inner_pointer";
-  case 1:
-    return "objc_returns_inner_pointer";
-  case 2:
     return "objc_returns_inner_pointer";
   }
 }
@@ -5971,14 +5298,6 @@ void ObjCRootClassAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Polic
     OS << " __attribute__((objc_root_class))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_root_class]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_root_class]]";
-    break;
-  }
 }
 }
 
@@ -5988,10 +5307,6 @@ const char *ObjCRootClassAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_root_class";
-  case 1:
-    return "objc_root_class";
-  case 2:
     return "objc_root_class";
   }
 }
@@ -6013,14 +5328,6 @@ void ObjCRuntimeNameAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Pol
     OS << " __attribute__((objc_runtime_name(\"" << getMetadataName() << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_runtime_name(\"" << getMetadataName() << "\")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_runtime_name(\"" << getMetadataName() << "\")]]";
-    break;
-  }
 }
 }
 
@@ -6030,10 +5337,6 @@ const char *ObjCRuntimeNameAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_runtime_name";
-  case 1:
-    return "objc_runtime_name";
-  case 2:
     return "objc_runtime_name";
   }
 }
@@ -6055,14 +5358,6 @@ void ObjCRuntimeVisibleAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
     OS << " __attribute__((objc_runtime_visible))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_runtime_visible]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_runtime_visible]]";
-    break;
-  }
 }
 }
 
@@ -6072,10 +5367,6 @@ const char *ObjCRuntimeVisibleAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_runtime_visible";
-  case 1:
-    return "objc_runtime_visible";
-  case 2:
     return "objc_runtime_visible";
   }
 }
@@ -6097,14 +5388,6 @@ void ObjCSubclassingRestrictedAttr::printPretty(raw_ostream &OS, const PrintingP
     OS << " __attribute__((objc_subclassing_restricted))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::objc_subclassing_restricted]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::objc_subclassing_restricted]]";
-    break;
-  }
 }
 }
 
@@ -6114,10 +5397,6 @@ const char *ObjCSubclassingRestrictedAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "objc_subclassing_restricted";
-  case 1:
-    return "objc_subclassing_restricted";
-  case 2:
     return "objc_subclassing_restricted";
   }
 }
@@ -6299,10 +5578,6 @@ void OptimizeNoneAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " [[clang::optnone]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::optnone]]";
-    break;
-  }
 }
 }
 
@@ -6314,8 +5589,6 @@ const char *OptimizeNoneAttr::getSpelling() const {
   case 0:
     return "optnone";
   case 1:
-    return "optnone";
-  case 2:
     return "optnone";
   }
 }
@@ -6337,14 +5610,6 @@ void OverloadableAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " __attribute__((overloadable))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::overloadable]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::overloadable]]";
-    break;
-  }
 }
 }
 
@@ -6354,10 +5619,6 @@ const char *OverloadableAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "overloadable";
-  case 1:
-    return "overloadable";
-  case 2:
     return "overloadable";
   }
 }
@@ -6406,102 +5667,42 @@ void OwnershipAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) c
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((ownership_holds(" << (getModule() ? getModule()->getName() : "") << ", ";
+    OS << " __attribute__((ownership_holds(";
+    OS << getModule()->getName();
+    OS << ", ";
   bool isFirst = true;
   for (const auto &Val : args()) {
     if (isFirst) isFirst = false;
     else OS << ", ";
-    OS << Val.getSourceIndex();
+    OS << Val;
   }
   OS << ")))";
     break;
   }
   case 1 : {
-    OS << " [[clang::ownership_holds(" << (getModule() ? getModule()->getName() : "") << ", ";
+    OS << " __attribute__((ownership_returns(";
+    OS << getModule()->getName();
+    OS << ", ";
   bool isFirst = true;
   for (const auto &Val : args()) {
     if (isFirst) isFirst = false;
     else OS << ", ";
-    OS << Val.getSourceIndex();
+    OS << Val;
   }
-  OS << ")]]";
+  OS << ")))";
     break;
   }
   case 2 : {
-    OS << " [[clang::ownership_holds(" << (getModule() ? getModule()->getName() : "") << ", ";
+    OS << " __attribute__((ownership_takes(";
+    OS << getModule()->getName();
+    OS << ", ";
   bool isFirst = true;
   for (const auto &Val : args()) {
     if (isFirst) isFirst = false;
     else OS << ", ";
-    OS << Val.getSourceIndex();
-  }
-  OS << ")]]";
-    break;
-  }
-  case 3 : {
-    OS << " __attribute__((ownership_returns(" << (getModule() ? getModule()->getName() : "") << ", ";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val.getSourceIndex();
+    OS << Val;
   }
   OS << ")))";
-    break;
-  }
-  case 4 : {
-    OS << " [[clang::ownership_returns(" << (getModule() ? getModule()->getName() : "") << ", ";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val.getSourceIndex();
-  }
-  OS << ")]]";
-    break;
-  }
-  case 5 : {
-    OS << " [[clang::ownership_returns(" << (getModule() ? getModule()->getName() : "") << ", ";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val.getSourceIndex();
-  }
-  OS << ")]]";
-    break;
-  }
-  case 6 : {
-    OS << " __attribute__((ownership_takes(" << (getModule() ? getModule()->getName() : "") << ", ";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val.getSourceIndex();
-  }
-  OS << ")))";
-    break;
-  }
-  case 7 : {
-    OS << " [[clang::ownership_takes(" << (getModule() ? getModule()->getName() : "") << ", ";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val.getSourceIndex();
-  }
-  OS << ")]]";
-    break;
-  }
-  case 8 : {
-    OS << " [[clang::ownership_takes(" << (getModule() ? getModule()->getName() : "") << ", ";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val.getSourceIndex();
-  }
-  OS << ")]]";
     break;
   }
 }
@@ -6515,20 +5716,8 @@ const char *OwnershipAttr::getSpelling() const {
   case 0:
     return "ownership_holds";
   case 1:
-    return "ownership_holds";
+    return "ownership_returns";
   case 2:
-    return "ownership_holds";
-  case 3:
-    return "ownership_returns";
-  case 4:
-    return "ownership_returns";
-  case 5:
-    return "ownership_returns";
-  case 6:
-    return "ownership_takes";
-  case 7:
-    return "ownership_takes";
-  case 8:
     return "ownership_takes";
   }
 }
@@ -6586,10 +5775,6 @@ void ParamTypestateAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Poli
     OS << " __attribute__((param_typestate(\"" << ParamTypestateAttr::ConvertConsumedStateToStr(getParamState()) << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::param_typestate(\"" << ParamTypestateAttr::ConvertConsumedStateToStr(getParamState()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -6599,8 +5784,6 @@ const char *ParamTypestateAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "param_typestate";
-  case 1:
     return "param_typestate";
   }
 }
@@ -6623,18 +5806,10 @@ void PascalAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) cons
     break;
   }
   case 1 : {
-    OS << " [[clang::pascal]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::pascal]]";
-    break;
-  }
-  case 3 : {
     OS << " __pascal";
     break;
   }
-  case 4 : {
+  case 2 : {
     OS << " _pascal";
     break;
   }
@@ -6649,12 +5824,8 @@ const char *PascalAttr::getSpelling() const {
   case 0:
     return "pascal";
   case 1:
-    return "pascal";
-  case 2:
-    return "pascal";
-  case 3:
     return "__pascal";
-  case 4:
+  case 2:
     return "_pascal";
   }
 }
@@ -6676,14 +5847,6 @@ void PassObjectSizeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Poli
     OS << " __attribute__((pass_object_size(" << getType() << ")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::pass_object_size(" << getType() << ")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::pass_object_size(" << getType() << ")]]";
-    break;
-  }
 }
 }
 
@@ -6693,10 +5856,6 @@ const char *PassObjectSizeAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "pass_object_size";
-  case 1:
-    return "pass_object_size";
-  case 2:
     return "pass_object_size";
   }
 }
@@ -6814,14 +5973,6 @@ void PreserveAllAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy)
     OS << " __attribute__((preserve_all))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::preserve_all]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::preserve_all]]";
-    break;
-  }
 }
 }
 
@@ -6831,10 +5982,6 @@ const char *PreserveAllAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "preserve_all";
-  case 1:
-    return "preserve_all";
-  case 2:
     return "preserve_all";
   }
 }
@@ -6856,14 +6003,6 @@ void PreserveMostAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " __attribute__((preserve_most))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::preserve_most]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::preserve_most]]";
-    break;
-  }
 }
 }
 
@@ -6873,10 +6012,6 @@ const char *PreserveMostAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "preserve_most";
-  case 1:
-    return "preserve_most";
-  case 2:
     return "preserve_most";
   }
 }
@@ -6928,10 +6063,6 @@ void PtGuardedVarAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " __attribute__((pt_guarded_var))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::pt_guarded_var]]";
-    break;
-  }
 }
 }
 
@@ -6941,8 +6072,6 @@ const char *PtGuardedVarAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "pt_guarded_var";
-  case 1:
     return "pt_guarded_var";
   }
 }
@@ -7115,17 +6244,6 @@ void ReleaseCapabilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &P
   OS << ")))";
     break;
   }
-  case 7 : {
-    OS << " [[clang::unlock_function(";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val;
-  }
-  OS << ")]]";
-    break;
-  }
 }
 }
 
@@ -7147,8 +6265,6 @@ const char *ReleaseCapabilityAttr::getSpelling() const {
   case 5:
     return "release_generic_capability";
   case 6:
-    return "unlock_function";
-  case 7:
     return "unlock_function";
   }
 }
@@ -7296,17 +6412,6 @@ void RequiresCapabilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
     break;
   }
   case 3 : {
-    OS << " [[clang::exclusive_locks_required(";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val;
-  }
-  OS << ")]]";
-    break;
-  }
-  case 4 : {
     OS << " __attribute__((requires_shared_capability(";
   bool isFirst = true;
   for (const auto &Val : args()) {
@@ -7317,7 +6422,7 @@ void RequiresCapabilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
   OS << ")))";
     break;
   }
-  case 5 : {
+  case 4 : {
     OS << " [[clang::requires_shared_capability(";
   bool isFirst = true;
   for (const auto &Val : args()) {
@@ -7328,7 +6433,7 @@ void RequiresCapabilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
   OS << ")]]";
     break;
   }
-  case 6 : {
+  case 5 : {
     OS << " __attribute__((shared_locks_required(";
   bool isFirst = true;
   for (const auto &Val : args()) {
@@ -7337,17 +6442,6 @@ void RequiresCapabilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
     OS << Val;
   }
   OS << ")))";
-    break;
-  }
-  case 7 : {
-    OS << " [[clang::shared_locks_required(";
-  bool isFirst = true;
-  for (const auto &Val : args()) {
-    if (isFirst) isFirst = false;
-    else OS << ", ";
-    OS << Val;
-  }
-  OS << ")]]";
     break;
   }
 }
@@ -7365,14 +6459,10 @@ const char *RequiresCapabilityAttr::getSpelling() const {
   case 2:
     return "exclusive_locks_required";
   case 3:
-    return "exclusive_locks_required";
+    return "requires_shared_capability";
   case 4:
     return "requires_shared_capability";
   case 5:
-    return "requires_shared_capability";
-  case 6:
-    return "shared_locks_required";
-  case 7:
     return "shared_locks_required";
   }
 }
@@ -7436,10 +6526,6 @@ void ReturnTypestateAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Pol
     OS << " __attribute__((return_typestate(\"" << ReturnTypestateAttr::ConvertConsumedStateToStr(getState()) << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::return_typestate(\"" << ReturnTypestateAttr::ConvertConsumedStateToStr(getState()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -7449,8 +6535,6 @@ const char *ReturnTypestateAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "return_typestate";
-  case 1:
     return "return_typestate";
   }
 }
@@ -7544,10 +6628,6 @@ void ScopedLockableAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Poli
     OS << " __attribute__((scoped_lockable))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::scoped_lockable]]";
-    break;
-  }
 }
 }
 
@@ -7557,8 +6637,6 @@ const char *ScopedLockableAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "scoped_lockable";
-  case 1:
     return "scoped_lockable";
   }
 }
@@ -7700,10 +6778,6 @@ void SetTypestateAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " __attribute__((set_typestate(\"" << SetTypestateAttr::ConvertConsumedStateToStr(getNewState()) << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::set_typestate(\"" << SetTypestateAttr::ConvertConsumedStateToStr(getNewState()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -7713,8 +6787,6 @@ const char *SetTypestateAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "set_typestate";
-  case 1:
     return "set_typestate";
   }
 }
@@ -7858,14 +6930,6 @@ void SwiftCallAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) c
     OS << " __attribute__((swiftcall))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::swiftcall]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::swiftcall]]";
-    break;
-  }
 }
 }
 
@@ -7875,10 +6939,6 @@ const char *SwiftCallAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "swiftcall";
-  case 1:
-    return "swiftcall";
-  case 2:
     return "swiftcall";
   }
 }
@@ -7900,14 +6960,6 @@ void SwiftContextAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy
     OS << " __attribute__((swift_context))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::swift_context]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::swift_context]]";
-    break;
-  }
 }
 }
 
@@ -7917,10 +6969,6 @@ const char *SwiftContextAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "swift_context";
-  case 1:
-    return "swift_context";
-  case 2:
     return "swift_context";
   }
 }
@@ -7942,14 +6990,6 @@ void SwiftErrorResultAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Po
     OS << " __attribute__((swift_error_result))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::swift_error_result]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::swift_error_result]]";
-    break;
-  }
 }
 }
 
@@ -7959,10 +6999,6 @@ const char *SwiftErrorResultAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "swift_error_result";
-  case 1:
-    return "swift_error_result";
-  case 2:
     return "swift_error_result";
   }
 }
@@ -7984,14 +7020,6 @@ void SwiftIndirectResultAttr::printPretty(raw_ostream &OS, const PrintingPolicy 
     OS << " __attribute__((swift_indirect_result))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::swift_indirect_result]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::swift_indirect_result]]";
-    break;
-  }
 }
 }
 
@@ -8001,10 +7029,6 @@ const char *SwiftIndirectResultAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "swift_indirect_result";
-  case 1:
-    return "swift_indirect_result";
-  case 2:
     return "swift_indirect_result";
   }
 }
@@ -8134,10 +7158,6 @@ void TestTypestateAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Polic
     OS << " __attribute__((test_typestate(\"" << TestTypestateAttr::ConvertConsumedStateToStr(getTestState()) << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::test_typestate(\"" << TestTypestateAttr::ConvertConsumedStateToStr(getTestState()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -8147,8 +7167,6 @@ const char *TestTypestateAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "test_typestate";
-  case 1:
     return "test_typestate";
   }
 }
@@ -8267,42 +7285,6 @@ const char *TransparentUnionAttr::getSpelling() const {
   }
 }
 
-TrivialABIAttr *TrivialABIAttr::clone(ASTContext &C) const {
-  auto *A = new (C) TrivialABIAttr(getLocation(), C, getSpellingListIndex());
-  A->Inherited = Inherited;
-  A->IsPackExpansion = IsPackExpansion;
-  A->Implicit = Implicit;
-  return A;
-}
-
-void TrivialABIAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
-  switch (SpellingListIndex) {
-  default:
-    llvm_unreachable("Unknown attribute spelling!");
-    break;
-  case 0 : {
-    OS << " __attribute__((trivial_abi))";
-    break;
-  }
-  case 1 : {
-    OS << " [[clang::trivial_abi]]";
-    break;
-  }
-}
-}
-
-const char *TrivialABIAttr::getSpelling() const {
-  switch (SpellingListIndex) {
-  default:
-    llvm_unreachable("Unknown attribute spelling!");
-    return "(No spelling)";
-  case 0:
-    return "trivial_abi";
-  case 1:
-    return "trivial_abi";
-  }
-}
-
 TryAcquireCapabilityAttr *TryAcquireCapabilityAttr::clone(ASTContext &C) const {
   auto *A = new (C) TryAcquireCapabilityAttr(getLocation(), C, successValue, args_, args_Size, getSpellingListIndex());
   A->Inherited = Inherited;
@@ -8393,15 +7375,9 @@ void TypeTagForDatatypeAttr::printPretty(raw_ostream &OS, const PrintingPolicy &
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((type_tag_for_datatype(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << getMatchingCType().getAsString() << ", " << getLayoutCompatible() << ", " << getMustBeNull() << ")))";
-    break;
-  }
-  case 1 : {
-    OS << " [[clang::type_tag_for_datatype(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << getMatchingCType().getAsString() << ", " << getLayoutCompatible() << ", " << getMustBeNull() << ")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::type_tag_for_datatype(" << (getArgumentKind() ? getArgumentKind()->getName() : "") << ", " << getMatchingCType().getAsString() << ", " << getLayoutCompatible() << ", " << getMustBeNull() << ")]]";
+    OS << " __attribute__((type_tag_for_datatype(";
+    OS << getArgumentKind()->getName();
+    OS << ", " << getMatchingCType().getAsString() << ", " << getLayoutCompatible() << ", " << getMustBeNull() << ")))";
     break;
   }
 }
@@ -8413,10 +7389,6 @@ const char *TypeTagForDatatypeAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "type_tag_for_datatype";
-  case 1:
-    return "type_tag_for_datatype";
-  case 2:
     return "type_tag_for_datatype";
   }
 }
@@ -8442,10 +7414,6 @@ void TypeVisibilityAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Poli
     OS << " [[clang::type_visibility(\"" << TypeVisibilityAttr::ConvertVisibilityTypeToStr(getVisibility()) << "\")]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::type_visibility(\"" << TypeVisibilityAttr::ConvertVisibilityTypeToStr(getVisibility()) << "\")]]";
-    break;
-  }
 }
 }
 
@@ -8457,8 +7425,6 @@ const char *TypeVisibilityAttr::getSpelling() const {
   case 0:
     return "type_visibility";
   case 1:
-    return "type_visibility";
-  case 2:
     return "type_visibility";
   }
 }
@@ -8480,14 +7446,6 @@ void UnavailableAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy)
     OS << " __attribute__((unavailable(\"" << getMessage() << "\")))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::unavailable(\"" << getMessage() << "\")]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::unavailable(\"" << getMessage() << "\")]]";
-    break;
-  }
 }
 }
 
@@ -8497,10 +7455,6 @@ const char *UnavailableAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "unavailable";
-  case 1:
-    return "unavailable";
-  case 2:
     return "unavailable";
   }
 }
@@ -8642,10 +7596,6 @@ void VecReturnAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) c
     OS << " __attribute__((vecreturn))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::vecreturn]]";
-    break;
-  }
 }
 }
 
@@ -8655,8 +7605,6 @@ const char *VecReturnAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "vecreturn";
-  case 1:
     return "vecreturn";
   }
 }
@@ -8709,18 +7657,10 @@ void VectorCallAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     break;
   }
   case 1 : {
-    OS << " [[clang::vectorcall]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::vectorcall]]";
-    break;
-  }
-  case 3 : {
     OS << " __vectorcall";
     break;
   }
-  case 4 : {
+  case 2 : {
     OS << " _vectorcall";
     break;
   }
@@ -8735,12 +7675,8 @@ const char *VectorCallAttr::getSpelling() const {
   case 0:
     return "vectorcall";
   case 1:
-    return "vectorcall";
-  case 2:
-    return "vectorcall";
-  case 3:
     return "__vectorcall";
-  case 4:
+  case 2:
     return "_vectorcall";
   }
 }
@@ -8924,14 +7860,6 @@ void WeakImportAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     OS << " __attribute__((weak_import))";
     break;
   }
-  case 1 : {
-    OS << " [[clang::weak_import]]";
-    break;
-  }
-  case 2 : {
-    OS << " [[clang::weak_import]]";
-    break;
-  }
 }
 }
 
@@ -8941,10 +7869,6 @@ const char *WeakImportAttr::getSpelling() const {
     llvm_unreachable("Unknown attribute spelling!");
     return "(No spelling)";
   case 0:
-    return "weak_import";
-  case 1:
-    return "weak_import";
-  case 2:
     return "weak_import";
   }
 }
@@ -9073,18 +7997,10 @@ void XRayInstrumentAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Poli
     break;
   }
   case 2 : {
-    OS << " [[clang::xray_always_instrument]]";
-    break;
-  }
-  case 3 : {
     OS << " __attribute__((xray_never_instrument))";
     break;
   }
-  case 4 : {
-    OS << " [[clang::xray_never_instrument]]";
-    break;
-  }
-  case 5 : {
+  case 3 : {
     OS << " [[clang::xray_never_instrument]]";
     break;
   }
@@ -9101,12 +8017,8 @@ const char *XRayInstrumentAttr::getSpelling() const {
   case 1:
     return "xray_always_instrument";
   case 2:
-    return "xray_always_instrument";
+    return "xray_never_instrument";
   case 3:
-    return "xray_never_instrument";
-  case 4:
-    return "xray_never_instrument";
-  case 5:
     return "xray_never_instrument";
   }
 }
@@ -9132,10 +8044,6 @@ void XRayLogArgsAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy)
     OS << " [[clang::xray_log_args(" << getArgumentCount() << ")]]";
     break;
   }
-  case 2 : {
-    OS << " [[clang::xray_log_args(" << getArgumentCount() << ")]]";
-    break;
-  }
 }
 }
 
@@ -9147,8 +8055,6 @@ const char *XRayLogArgsAttr::getSpelling() const {
   case 0:
     return "xray_log_args";
   case 1:
-    return "xray_log_args";
-  case 2:
     return "xray_log_args";
   }
 }
@@ -9203,8 +8109,6 @@ const char *Attr::getSpelling() const {
     return cast<ArcWeakrefUnavailableAttr>(this)->getSpelling();
   case attr::ArgumentWithTypeTag:
     return cast<ArgumentWithTypeTagAttr>(this)->getSpelling();
-  case attr::Artificial:
-    return cast<ArtificialAttr>(this)->getSpelling();
   case attr::AsmLabel:
     return cast<AsmLabelAttr>(this)->getSpelling();
   case attr::AssertCapability:
@@ -9567,8 +8471,6 @@ const char *Attr::getSpelling() const {
     return cast<ThreadAttr>(this)->getSpelling();
   case attr::TransparentUnion:
     return cast<TransparentUnionAttr>(this)->getSpelling();
-  case attr::TrivialABI:
-    return cast<TrivialABIAttr>(this)->getSpelling();
   case attr::TryAcquireCapability:
     return cast<TryAcquireCapabilityAttr>(this)->getSpelling();
   case attr::TypeTagForDatatype:
@@ -9663,8 +8565,6 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<ArcWeakrefUnavailableAttr>(this)->clone(C);
   case attr::ArgumentWithTypeTag:
     return cast<ArgumentWithTypeTagAttr>(this)->clone(C);
-  case attr::Artificial:
-    return cast<ArtificialAttr>(this)->clone(C);
   case attr::AsmLabel:
     return cast<AsmLabelAttr>(this)->clone(C);
   case attr::AssertCapability:
@@ -10027,8 +8927,6 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<ThreadAttr>(this)->clone(C);
   case attr::TransparentUnion:
     return cast<TransparentUnionAttr>(this)->clone(C);
-  case attr::TrivialABI:
-    return cast<TrivialABIAttr>(this)->clone(C);
   case attr::TryAcquireCapability:
     return cast<TryAcquireCapabilityAttr>(this)->clone(C);
   case attr::TypeTagForDatatype:
@@ -10123,8 +9021,6 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<ArcWeakrefUnavailableAttr>(this)->printPretty(OS, Policy);
   case attr::ArgumentWithTypeTag:
     return cast<ArgumentWithTypeTagAttr>(this)->printPretty(OS, Policy);
-  case attr::Artificial:
-    return cast<ArtificialAttr>(this)->printPretty(OS, Policy);
   case attr::AsmLabel:
     return cast<AsmLabelAttr>(this)->printPretty(OS, Policy);
   case attr::AssertCapability:
@@ -10487,8 +9383,6 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<ThreadAttr>(this)->printPretty(OS, Policy);
   case attr::TransparentUnion:
     return cast<TransparentUnionAttr>(this)->printPretty(OS, Policy);
-  case attr::TrivialABI:
-    return cast<TrivialABIAttr>(this)->printPretty(OS, Policy);
   case attr::TryAcquireCapability:
     return cast<TryAcquireCapabilityAttr>(this)->printPretty(OS, Policy);
   case attr::TypeTagForDatatype:

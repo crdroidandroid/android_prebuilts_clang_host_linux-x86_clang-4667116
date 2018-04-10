@@ -1,4 +1,4 @@
-//===- TokenLexer.h - Lex from a token buffer -------------------*- C++ -*-===//
+//===--- TokenLexer.h - Lex from a token buffer -----------------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -18,28 +18,28 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace clang {
-
-class MacroArgs;
-class MacroInfo;
-class Preprocessor;
-class Token;
-class VAOptExpansionContext;
+  class MacroInfo;
+  class Preprocessor;
+  class Token;
+  class MacroArgs;
+  class VAOptExpansionContext;
 
 /// TokenLexer - This implements a lexer that returns tokens from a macro body
 /// or token stream instead of lexing from a character buffer.  This is used for
 /// macro expansion and _Pragma handling, for example.
+///
 class TokenLexer {
-  friend class Preprocessor;
-
   /// Macro - The macro we are expanding from.  This is null if expanding a
   /// token stream.
-  MacroInfo *Macro = nullptr;
+  ///
+  MacroInfo *Macro;
 
   /// ActualArgs - The actual arguments specified for a function-like macro, or
   /// null.  The TokenLexer owns the pointed-to object.
-  MacroArgs *ActualArgs = nullptr;
+  MacroArgs *ActualArgs;
 
   /// PP - The current preprocessor object we are expanding for.
+  ///
   Preprocessor &PP;
 
   /// Tokens - This is the pointer to an array of tokens that the macro is
@@ -51,11 +51,14 @@ class TokenLexer {
   /// Note that if it points into Preprocessor's cache buffer, the Preprocessor
   /// may update the pointer as needed.
   const Token *Tokens;
+  friend class Preprocessor;
 
   /// NumTokens - This is the length of the Tokens array.
+  ///
   unsigned NumTokens;
 
   /// This is the index of the next token that Lex will return.
+  ///
   unsigned CurTokenIdx;
 
   /// ExpandLocStart/End - The source location range where this macro was
@@ -72,7 +75,6 @@ class TokenLexer {
 
   /// \brief Location of the macro definition.
   SourceLocation MacroDefStart;
-
   /// \brief Length of the macro definition.
   unsigned MacroDefLength;
 
@@ -99,6 +101,8 @@ class TokenLexer {
   /// should not be subject to further macro expansion.
   bool DisableMacroExpansion : 1;
 
+  TokenLexer(const TokenLexer &) = delete;
+  void operator=(const TokenLexer &) = delete;
 public:
   /// Create a TokenLexer for the specified macro with the specified actual
   /// arguments.  Note that this ctor takes ownership of the ActualArgs pointer.
@@ -106,22 +110,9 @@ public:
   /// identifier for an object-like macro.
   TokenLexer(Token &Tok, SourceLocation ILEnd, MacroInfo *MI,
              MacroArgs *ActualArgs, Preprocessor &pp)
-      : PP(pp), OwnsTokens(false) {
+    : Macro(nullptr), ActualArgs(nullptr), PP(pp), OwnsTokens(false) {
     Init(Tok, ILEnd, MI, ActualArgs);
   }
-
-  /// Create a TokenLexer for the specified token stream.  If 'OwnsTokens' is
-  /// specified, this takes ownership of the tokens and delete[]'s them when
-  /// the token lexer is empty.
-  TokenLexer(const Token *TokArray, unsigned NumToks, bool DisableExpansion,
-             bool ownsTokens, Preprocessor &pp)
-      : PP(pp), OwnsTokens(false) {
-    Init(TokArray, NumToks, DisableExpansion, ownsTokens);
-  }
-
-  TokenLexer(const TokenLexer &) = delete;
-  TokenLexer &operator=(const TokenLexer &) = delete;
-  ~TokenLexer() { destroy(); }
 
   /// Init - Initialize this TokenLexer to expand from the specified macro
   /// with the specified argument information.  Note that this ctor takes
@@ -130,6 +121,15 @@ public:
   void Init(Token &Tok, SourceLocation ILEnd, MacroInfo *MI,
             MacroArgs *ActualArgs);
 
+  /// Create a TokenLexer for the specified token stream.  If 'OwnsTokens' is
+  /// specified, this takes ownership of the tokens and delete[]'s them when
+  /// the token lexer is empty.
+  TokenLexer(const Token *TokArray, unsigned NumToks, bool DisableExpansion,
+             bool ownsTokens, Preprocessor &pp)
+    : Macro(nullptr), ActualArgs(nullptr), PP(pp), OwnsTokens(false) {
+    Init(TokArray, NumToks, DisableExpansion, ownsTokens);
+  }
+
   /// Init - Initialize this TokenLexer with the specified token stream.
   /// This does not take ownership of the specified token vector.
   ///
@@ -137,6 +137,8 @@ public:
   /// stream should be disabled.
   void Init(const Token *TokArray, unsigned NumToks,
             bool DisableMacroExpansion, bool OwnsTokens);
+
+  ~TokenLexer() { destroy(); }
 
   /// isNextTokenLParen - If the next token lexed will pop this macro off the
   /// expansion stack, return 2.  If the next unexpanded token is a '(', return
@@ -180,6 +182,7 @@ private:
   ///
   /// \returns If this returns true, the caller should immediately return the
   /// token.
+
   bool pasteTokens(Token &LHSTok, ArrayRef<Token> TokenStream,
                    unsigned int &CurIdx);
 
@@ -201,6 +204,7 @@ private:
   /// \param[in] VCtx - contains relevent contextual information about the
   /// state of the tokens around and including the __VA_OPT__ token, necessary
   /// for stringification.
+
   void stringifyVAOPTContents(SmallVectorImpl<Token> &ReplacementToks,
                               const VAOptExpansionContext &VCtx,
                               SourceLocation VAOPTClosingParenLoc);
@@ -239,6 +243,6 @@ private:
   void PropagateLineStartLeadingSpaceInfo(Token &Result);
 };
 
-} // namespace clang
+}  // end namespace clang
 
-#endif // LLVM_CLANG_LEX_TOKENLEXER_H
+#endif

@@ -11,8 +11,6 @@
 #define LLVM_CLANG_TOOLING_REFACTOR_REFACTORING_ACTION_RULE_H
 
 #include "clang/Basic/LLVM.h"
-#include "llvm/ADT/Optional.h"
-#include "llvm/ADT/StringRef.h"
 #include <vector>
 
 namespace clang {
@@ -21,15 +19,6 @@ namespace tooling {
 class RefactoringOptionVisitor;
 class RefactoringResultConsumer;
 class RefactoringRuleContext;
-
-struct RefactoringDescriptor {
-  /// A unique identifier for the specific refactoring.
-  StringRef Name;
-  /// A human readable title for the refactoring.
-  StringRef Title;
-  /// A human readable description of what the refactoring does.
-  StringRef Description;
-};
 
 /// A common refactoring action rule interface that defines the 'invoke'
 /// function that performs the refactoring operation (either fully or
@@ -44,9 +33,6 @@ public:
   /// consumer to propagate the result of the refactoring action.
   virtual void invoke(RefactoringResultConsumer &Consumer,
                       RefactoringRuleContext &Context) = 0;
-
-  /// Returns the structure that describes the refactoring.
-  // static const RefactoringDescriptor &describe() = 0;
 };
 
 /// A refactoring action rule is a wrapper class around a specific refactoring

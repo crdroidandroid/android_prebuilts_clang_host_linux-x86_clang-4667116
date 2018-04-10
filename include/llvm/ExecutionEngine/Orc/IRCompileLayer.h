@@ -16,7 +16,6 @@
 
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
-#include "llvm/ExecutionEngine/Orc/Core.h"
 #include "llvm/Support/Error.h"
 #include <memory>
 #include <string>
@@ -36,6 +35,9 @@ template <typename BaseLayerT, typename CompileFtor>
 class IRCompileLayer {
 public:
 
+  /// @brief Handle to a compiled module.
+  using ModuleHandleT = typename BaseLayerT::ObjHandleT;
+
   /// @brief Construct an IRCompileLayer with the given BaseLayer, which must
   ///        implement the ObjectLayer concept.
   IRCompileLayer(BaseLayerT &BaseLayer, CompileFtor Compile)
@@ -46,12 +48,20 @@ public:
 
   /// @brief Compile the module, and add the resulting object to the base layer
   ///        along with the given memory manager and symbol resolver.
-  Error addModule(VModuleKey K, std::shared_ptr<Module> M) {
-    return BaseLayer.addObject(std::move(K), Compile(*M));
+  ///
+  /// @return A handle for the added module.
+  Expected<ModuleHandleT>
+  addModule(std::shared_ptr<Module> M,
+            std::shared_ptr<JITSymbolResolver> Resolver) {
+    using CompileResult = decltype(Compile(*M));
+    auto Obj = std::make_shared<CompileResult>(Compile(*M));
+    return BaseLayer.addObject(std::move(Obj), std::move(Resolver));
   }
 
-  /// @brief Remove the module associated with the VModuleKey K.
-  Error removeModule(VModuleKey K) { return BaseLayer.removeObject(K); }
+  /// @brief Remove the module associated with the handle H.
+  Error removeModule(ModuleHandleT H) {
+    return BaseLayer.removeObject(H);
+  }
 
   /// @brief Search for the given named symbol.
   /// @param Name The name of the symbol to search for.
@@ -64,20 +74,22 @@ public:
   /// @brief Get the address of the given symbol in compiled module represented
   ///        by the handle H. This call is forwarded to the base layer's
   ///        implementation.
-  /// @param K The VModuleKey for the module to search in.
+  /// @param H The handle for the module to search in.
   /// @param Name The name of the symbol to search for.
   /// @param ExportedSymbolsOnly If true, search only for exported symbols.
   /// @return A handle for the given named symbol, if it is found in the
   ///         given module.
-  JITSymbol findSymbolIn(VModuleKey K, const std::string &Name,
+  JITSymbol findSymbolIn(ModuleHandleT H, const std::string &Name,
                          bool ExportedSymbolsOnly) {
-    return BaseLayer.findSymbolIn(K, Name, ExportedSymbolsOnly);
+    return BaseLayer.findSymbolIn(H, Name, ExportedSymbolsOnly);
   }
 
   /// @brief Immediately emit and finalize the module represented by the given
   ///        handle.
-  /// @param K The VModuleKey for the module to emit/finalize.
-  Error emitAndFinalize(VModuleKey K) { return BaseLayer.emitAndFinalize(K); }
+  /// @param H Handle for module to emit/finalize.
+  Error emitAndFinalize(ModuleHandleT H) {
+    return BaseLayer.emitAndFinalize(H);
+  }
 
 private:
   BaseLayerT &BaseLayer;

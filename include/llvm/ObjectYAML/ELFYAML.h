@@ -83,7 +83,6 @@ struct ProgramHeader {
   ELF_PF Flags;
   llvm::yaml::Hex64 VAddr;
   llvm::yaml::Hex64 PAddr;
-  Optional<llvm::yaml::Hex64> Align;
   std::vector<SectionName> Sections;
 };
 
@@ -207,7 +206,6 @@ struct Object {
   // top-level key, which automatically ensures that invariants like there
   // being a single SHT_SYMTAB section are upheld.
   LocalGlobalWeakSymbols Symbols;
-  LocalGlobalWeakSymbols DynamicSymbols;
 };
 
 } // end namespace ELFYAML

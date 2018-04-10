@@ -15,7 +15,6 @@
 #ifndef LLVM_TRANSFORMS_IPO_H
 #define LLVM_TRANSFORMS_IPO_H
 
-#include "llvm/ADT/SmallVector.h"
 #include <functional>
 #include <vector>
 
@@ -180,13 +179,10 @@ Pass *createLoopExtractorPass();
 ///
 Pass *createSingleLoopExtractorPass();
 
-/// createBlockExtractorPass - This pass extracts all the specified blocks
-/// from the functions in the module.
+/// createBlockExtractorPass - This pass extracts all blocks (except those
+/// specified in the argument list) from the functions in the module.
 ///
 ModulePass *createBlockExtractorPass();
-ModulePass *
-createBlockExtractorPass(const SmallVectorImpl<BasicBlock *> &BlocksToExtract,
-                         bool EraseFunctions);
 
 /// createStripDeadPrototypesPass - This pass removes any function declarations
 /// (prototypes) that are not used.
@@ -219,10 +215,6 @@ ModulePass *createMetaRenamerPass();
 /// createBarrierNoopPass - This pass is purely a module pass barrier in a pass
 /// manager.
 ModulePass *createBarrierNoopPass();
-
-/// createCalledValuePropagationPass - Attach metadata to indirct call sites
-/// indicating the set of functions they may target at run-time.
-ModulePass *createCalledValuePropagationPass();
 
 /// What to do with the summary when running passes that operate on it.
 enum class PassSummaryAction {

@@ -18,7 +18,6 @@
 namespace lld {
 class File;
 class LinkingContext;
-class Registry;
 namespace mach_o {
 namespace normalized {
 struct NormalizedFile;

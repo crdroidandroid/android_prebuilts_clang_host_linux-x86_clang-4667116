@@ -20,13 +20,11 @@
 #define LLVM_CODEGEN_MACHINEINSTRBUILDER_H
 
 #include "llvm/ADT/ArrayRef.h"
-#include "llvm/CodeGen/GlobalISel/Utils.h"
 #include "llvm/CodeGen/MachineBasicBlock.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstr.h"
 #include "llvm/CodeGen/MachineInstrBundle.h"
 #include "llvm/CodeGen/MachineOperand.h"
-#include "llvm/CodeGen/TargetRegisterInfo.h"
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/Support/ErrorHandling.h"
@@ -50,7 +48,6 @@ namespace RegState {
     EarlyClobber   = 0x40,
     Debug          = 0x80,
     InternalRead   = 0x100,
-    Renamable      = 0x200,
     DefineNoRead   = Define | Undef,
     ImplicitDefine = Implicit | Define,
     ImplicitKill   = Implicit | Kill
@@ -94,8 +91,7 @@ public:
                                                flags & RegState::EarlyClobber,
                                                SubReg,
                                                flags & RegState::Debug,
-                                               flags & RegState::InternalRead,
-                                               flags & RegState::Renamable));
+                                               flags & RegState::InternalRead));
     return *this;
   }
 
@@ -284,12 +280,6 @@ public:
     MI->copyImplicitOps(*MF, OtherMI);
     return *this;
   }
-
-  bool constrainAllUses(const TargetInstrInfo &TII,
-                        const TargetRegisterInfo &TRI,
-                        const RegisterBankInfo &RBI) const {
-    return constrainSelectedInstRegOperands(*MI, TII, TRI, RBI);
-  }
 };
 
 /// Builder interface. Specify how to create the initial instruction itself.
@@ -453,9 +443,6 @@ inline unsigned getInternalReadRegState(bool B) {
 inline unsigned getDebugRegState(bool B) {
   return B ? RegState::Debug : 0;
 }
-inline unsigned getRenamableRegState(bool B) {
-  return B ? RegState::Renamable : 0;
-}
 
 /// Get all register state flags from machine operand \p RegOp.
 inline unsigned getRegState(const MachineOperand &RegOp) {
@@ -466,10 +453,7 @@ inline unsigned getRegState(const MachineOperand &RegOp) {
          getDeadRegState(RegOp.isDead())                  |
          getUndefRegState(RegOp.isUndef())                |
          getInternalReadRegState(RegOp.isInternalRead())  |
-         getDebugRegState(RegOp.isDebug())                |
-         getRenamableRegState(
-             TargetRegisterInfo::isPhysicalRegister(RegOp.getReg()) &&
-             RegOp.isRenamable());
+         getDebugRegState(RegOp.isDebug());
 }
 
 /// Helper class for constructing bundles of MachineInstrs.

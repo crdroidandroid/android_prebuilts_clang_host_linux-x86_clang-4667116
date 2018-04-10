@@ -127,12 +127,10 @@ private:
 protected: // Can only create subclasses.
   MCAsmParser();
 
-  /// Flag tracking whether any errors have been encountered.
   bool HadError = false;
-  /// Enable print [latency:throughput] in output file.
-  bool EnablePrintSchedInfo = false;
 
   SmallVector<MCPendingError, 1> PendingErrors;
+  /// Flag tracking whether any errors have been encountered.
 
 public:
   MCAsmParser(const MCAsmParser &) = delete;
@@ -164,9 +162,6 @@ public:
 
   bool getShowParsedOperands() const { return ShowParsedOperands; }
   void setShowParsedOperands(bool Value) { ShowParsedOperands = Value; }
-
-  void setEnablePrintSchedInfo(bool Value) { EnablePrintSchedInfo = Value; }
-  bool shouldPrintSchedInfo() { return EnablePrintSchedInfo; }
 
   /// \brief Run the parser on the input source buffer.
   virtual bool Run(bool NoInitialTextSection, bool NoFinalize = false) = 0;

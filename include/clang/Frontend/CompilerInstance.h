@@ -183,9 +183,6 @@ class CompilerInstance : public ModuleLoader {
   /// The list of active output files.
   std::list<OutputFile> OutputFiles;
 
-  /// Force an output buffer.
-  std::unique_ptr<llvm::raw_pwrite_stream> OutputStream;
-
   CompilerInstance(const CompilerInstance &) = delete;
   void operator=(const CompilerInstance &) = delete;
 public:
@@ -775,14 +772,6 @@ public:
                                       const FrontendOptions &Opts);
 
   /// }
-
-  void setOutputStream(std::unique_ptr<llvm::raw_pwrite_stream> OutStream) {
-    OutputStream = std::move(OutStream);
-  }
-
-  std::unique_ptr<llvm::raw_pwrite_stream> takeOutputStream() {
-    return std::move(OutputStream);
-  }
 
   // Create module manager.
   void createModuleManager();

@@ -30,9 +30,8 @@ class SanitizerArgs {
   std::vector<std::string> ExtraDeps;
   int CoverageFeatures = 0;
   int MsanTrackOrigins = 0;
-  bool MsanUseAfterDtor = true;
+  bool MsanUseAfterDtor = false;
   bool CfiCrossDso = false;
-  bool CfiICallGeneralizePointers = false;
   int AsanFieldPadding = 0;
   bool SharedRuntime = false;
   bool AsanUseAfterScope = true;
@@ -55,14 +54,12 @@ class SanitizerArgs {
   bool needsSharedRt() const { return SharedRuntime; }
 
   bool needsAsanRt() const { return Sanitizers.has(SanitizerKind::Address); }
-  bool needsHwasanRt() const { return Sanitizers.has(SanitizerKind::HWAddress); }
   bool needsTsanRt() const { return Sanitizers.has(SanitizerKind::Thread); }
   bool needsMsanRt() const { return Sanitizers.has(SanitizerKind::Memory); }
   bool needsFuzzer() const { return Sanitizers.has(SanitizerKind::Fuzzer); }
   bool needsLsanRt() const {
     return Sanitizers.has(SanitizerKind::Leak) &&
-           !Sanitizers.has(SanitizerKind::Address) &&
-           !Sanitizers.has(SanitizerKind::HWAddress);
+           !Sanitizers.has(SanitizerKind::Address);
   }
   bool needsUbsanRt() const;
   bool requiresMinimalRuntime() const { return MinimalRuntime; }
@@ -74,7 +71,6 @@ class SanitizerArgs {
   bool needsEsanRt() const {
     return Sanitizers.hasOneOf(SanitizerKind::Efficiency);
   }
-  bool needsScudoRt() const { return Sanitizers.has(SanitizerKind::Scudo); }
 
   bool requiresPIE() const;
   bool needsUnwindTables() const;

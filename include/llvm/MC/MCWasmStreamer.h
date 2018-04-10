@@ -10,8 +10,6 @@
 #ifndef LLVM_MC_MCWASMSTREAMER_H
 #define LLVM_MC_MCWASMSTREAMER_H
 
-#include "MCAsmBackend.h"
-#include "MCCodeEmitter.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/MC/MCDirectives.h"
 #include "llvm/MC/MCObjectStreamer.h"
@@ -19,7 +17,9 @@
 #include "llvm/Support/DataTypes.h"
 
 namespace llvm {
+class MCAsmBackend;
 class MCAssembler;
+class MCCodeEmitter;
 class MCExpr;
 class MCInst;
 class raw_ostream;

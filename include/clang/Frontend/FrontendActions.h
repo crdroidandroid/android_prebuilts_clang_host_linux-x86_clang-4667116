@@ -86,15 +86,10 @@ public:
   /// \brief Compute the AST consumer arguments that will be used to
   /// create the PCHGenerator instance returned by CreateASTConsumer.
   ///
-  /// \returns false if an error occurred, true otherwise.
-  static bool ComputeASTConsumerArguments(CompilerInstance &CI,
-                                          std::string &Sysroot);
-
-  /// \brief Creates file to write the PCH into and returns a stream to write it
-  /// into. On error, returns null.
-  static std::unique_ptr<llvm::raw_pwrite_stream>
-  CreateOutputFile(CompilerInstance &CI, StringRef InFile,
-                   std::string &OutputFile);
+  /// \returns true if an error occurred, false otherwise.
+  static std::unique_ptr<raw_pwrite_stream>
+  ComputeASTConsumerArguments(CompilerInstance &CI, StringRef InFile,
+                              std::string &Sysroot, std::string &OutputFile);
 
   bool BeginSourceFileAction(CompilerInstance &CI) override;
 };
@@ -165,14 +160,6 @@ protected:
 
 public:
   bool hasCodeCompletionSupport() const override { return false; }
-};
-
-class TemplightDumpAction : public ASTFrontendAction {
-protected:
-  std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
-                                                 StringRef InFile) override;
-
-  void ExecuteAction() override;
 };
 
 /**

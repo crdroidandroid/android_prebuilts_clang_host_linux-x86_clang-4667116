@@ -44,11 +44,6 @@ struct MCProcResourceDesc {
   // an out-of-order cpus.
   int BufferSize;
 
-  // If the resource has sub-units, a pointer to the first element of an array
-  // of `NumUnits` elements containing the ProcResourceIdx of the sub units.
-  // nullptr if the resource does not have sub-units.
-  const unsigned *SubUnitsIdxBegin;
-
   bool operator==(const MCProcResourceDesc &Other) const {
     return NumUnits == Other.NumUnits && SuperIdx == Other.SuperIdx
       && BufferSize == Other.BufferSize;
@@ -58,8 +53,8 @@ struct MCProcResourceDesc {
 /// Identify one of the processor resource kinds consumed by a particular
 /// scheduling class for the specified number of cycles.
 struct MCWriteProcResEntry {
-  uint16_t ProcResourceIdx;
-  uint16_t Cycles;
+  unsigned ProcResourceIdx;
+  unsigned Cycles;
 
   bool operator==(const MCWriteProcResEntry &Other) const {
     return ProcResourceIdx == Other.ProcResourceIdx && Cycles == Other.Cycles;
@@ -72,8 +67,8 @@ struct MCWriteProcResEntry {
 /// the WriteResources of this def. When the operand expands to a sequence of
 /// writes, this ID is the last write in the sequence.
 struct MCWriteLatencyEntry {
-  int16_t Cycles;
-  uint16_t WriteResourceID;
+  int Cycles;
+  unsigned WriteResourceID;
 
   bool operator==(const MCWriteLatencyEntry &Other) const {
     return Cycles == Other.Cycles && WriteResourceID == Other.WriteResourceID;
@@ -104,21 +99,21 @@ struct MCReadAdvanceEntry {
 ///
 /// Defined as an aggregate struct for creating tables with initializer lists.
 struct MCSchedClassDesc {
-  static const unsigned short InvalidNumMicroOps = (1U << 14) - 1;
-  static const unsigned short VariantNumMicroOps = InvalidNumMicroOps - 1;
+  static const unsigned short InvalidNumMicroOps = UINT16_MAX;
+  static const unsigned short VariantNumMicroOps = UINT16_MAX - 1;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   const char* Name;
 #endif
-  uint16_t NumMicroOps : 14;
-  bool     BeginGroup : 1;
-  bool     EndGroup : 1;
-  uint16_t WriteProcResIdx; // First index into WriteProcResTable.
-  uint16_t NumWriteProcResEntries;
-  uint16_t WriteLatencyIdx; // First index into WriteLatencyTable.
-  uint16_t NumWriteLatencyEntries;
-  uint16_t ReadAdvanceIdx; // First index into ReadAdvanceTable.
-  uint16_t NumReadAdvanceEntries;
+  unsigned short NumMicroOps;
+  bool     BeginGroup;
+  bool     EndGroup;
+  unsigned WriteProcResIdx; // First index into WriteProcResTable.
+  unsigned NumWriteProcResEntries;
+  unsigned WriteLatencyIdx; // First index into WriteLatencyTable.
+  unsigned NumWriteLatencyEntries;
+  unsigned ReadAdvanceIdx; // First index into ReadAdvanceTable.
+  unsigned NumReadAdvanceEntries;
 
   bool isValid() const {
     return NumMicroOps != InvalidNumMicroOps;

@@ -1,4 +1,4 @@
-//===- Module.h - Describe a module -----------------------------*- C++ -*-===//
+//===--- Module.h - Describe a module ---------------------------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -6,13 +6,12 @@
 // License. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-//
+///
 /// \file
 /// \brief Defines the clang::Module class, which describes a module in the
 /// source code.
-//
+///
 //===----------------------------------------------------------------------===//
-
 #ifndef LLVM_CLANG_BASIC_MODULE_H
 #define LLVM_CLANG_BASIC_MODULE_H
 
@@ -20,7 +19,6 @@
 #include "clang/Basic/SourceLocation.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseSet.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/SetVector.h"
@@ -28,28 +26,22 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/iterator_range.h"
-#include <array>
-#include <cassert>
-#include <cstdint>
-#include <ctime>
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace llvm {
-
-class raw_ostream;
-
-} // namespace llvm
+  class raw_ostream;
+}
 
 namespace clang {
   
 class LangOptions;
 class TargetInfo;
-
+class IdentifierInfo;
+  
 /// \brief Describes the name of a module.
-using ModuleId = SmallVector<std::pair<std::string, SourceLocation>, 2>;
+typedef SmallVector<std::pair<std::string, SourceLocation>, 2> ModuleId;
 
 /// The signature of a module, which is a hash of the AST content.
 struct ASTFileSignature : std::array<uint32_t, 5> {
@@ -93,7 +85,7 @@ public:
   /// \brief The build directory of this module. This is the directory in
   /// which the module is notionally built, and relative to which its headers
   /// are found.
-  const DirectoryEntry *Directory = nullptr;
+  const DirectoryEntry *Directory;
 
   /// \brief The presumed file name for the module map defining this module.
   /// Only non-empty when building from preprocessed source.
@@ -122,7 +114,7 @@ private:
 
   /// \brief The AST file if this is a top-level module which has a
   /// corresponding serialized AST file, or null otherwise.
-  const FileEntry *ASTFile = nullptr;
+  const FileEntry *ASTFile;
 
   /// \brief The top-level headers associated with this module.
   llvm::SmallSetVector<const FileEntry *, 2> TopHeaders;
@@ -189,16 +181,13 @@ public:
 
   /// \brief An individual requirement: a feature name and a flag indicating
   /// the required state of that feature.
-  using Requirement = std::pair<std::string, bool>;
+  typedef std::pair<std::string, bool> Requirement;
 
   /// \brief The set of language features required to use this module.
   ///
   /// If any of these requirements are not available, the \c IsAvailable bit
   /// will be false to indicate that this (sub)module is not available.
   SmallVector<Requirement, 2> Requirements;
-
-  /// \brief A module with the same name that shadows this module.
-  Module *ShadowingModule = nullptr;
 
   /// \brief Whether this module is missing a feature from \c Requirements.
   unsigned IsMissingRequirement : 1;
@@ -281,7 +270,7 @@ public:
   ///
   /// The pointer is the module being re-exported, while the bit will be true
   /// to indicate that this is a wildcard export.
-  using ExportDecl = llvm::PointerIntPair<Module *, 1, bool>;
+  typedef llvm::PointerIntPair<Module *, 1, bool> ExportDecl;
   
   /// \brief The set of export declarations.
   SmallVector<ExportDecl, 2> Exports;
@@ -313,9 +302,9 @@ public:
   /// \brief A library or framework to link against when an entity from this
   /// module is used.
   struct LinkLibrary {
-    LinkLibrary() = default;
+    LinkLibrary() : IsFramework(false) { }
     LinkLibrary(const std::string &Library, bool IsFramework)
-        : Library(Library), IsFramework(IsFramework) {}
+      : Library(Library), IsFramework(IsFramework) { }
     
     /// \brief The library to link against.
     ///
@@ -324,7 +313,7 @@ public:
     std::string Library;
 
     /// \brief Whether this is a framework rather than a library.
-    bool IsFramework = false;
+    bool IsFramework;
   };
 
   /// \brief The set of libraries or frameworks to link against when
@@ -378,20 +367,13 @@ public:
   ///
   /// \param Target The target options used for the current translation unit.
   ///
-  /// \param Req If this module is unavailable because of a missing requirement,
-  /// this parameter will be set to one of the requirements that is not met for
-  /// use of this module.
-  ///
-  /// \param MissingHeader If this module is unavailable because of a missing
-  /// header, this parameter will be set to one of the missing headers.
-  ///
-  /// \param ShadowingModule If this module is unavailable because it is
-  /// shadowed, this parameter will be set to the shadowing module.
+  /// \param Req If this module is unavailable, this parameter
+  /// will be set to one of the requirements that is not met for use of
+  /// this module.
   bool isAvailable(const LangOptions &LangOpts, 
                    const TargetInfo &Target,
                    Requirement &Req,
-                   UnresolvedHeaderDirective &MissingHeader,
-                   Module *&ShadowingModule) const;
+                   UnresolvedHeaderDirective &MissingHeader) const;
 
   /// \brief Determine whether this module is a submodule.
   bool isSubModule() const { return Parent != nullptr; }
@@ -450,6 +432,7 @@ public:
   const Module *getTopLevelModule() const;
   
   /// \brief Retrieve the name of the top-level module.
+  ///
   StringRef getTopLevelModuleName() const {
     return getTopLevelModule()->Name;
   }
@@ -542,8 +525,8 @@ public:
 
   unsigned getVisibilityID() const { return VisibilityID; }
 
-  using submodule_iterator = std::vector<Module *>::iterator;
-  using submodule_const_iterator = std::vector<Module *>::const_iterator;
+  typedef std::vector<Module *>::iterator submodule_iterator;
+  typedef std::vector<Module *>::const_iterator submodule_const_iterator;
   
   submodule_iterator submodule_begin() { return SubModules.begin(); }
   submodule_const_iterator submodule_begin() const {return SubModules.begin();}
@@ -568,6 +551,7 @@ public:
   }
 
   /// \brief Print the module map for this module to the given stream. 
+  ///
   void print(raw_ostream &OS, unsigned Indent = 0) const;
   
   /// \brief Dump the contents of this module to the given output stream.
@@ -580,7 +564,7 @@ private:
 /// \brief A set of visible modules.
 class VisibleModuleSet {
 public:
-  VisibleModuleSet() = default;
+  VisibleModuleSet() : Generation(0) {}
   VisibleModuleSet(VisibleModuleSet &&O)
       : ImportLocs(std::move(O.ImportLocs)), Generation(O.Generation ? 1 : 0) {
     O.ImportLocs.clear();
@@ -615,15 +599,13 @@ public:
 
   /// \brief A callback to call when a module is made visible (directly or
   /// indirectly) by a call to \ref setVisible.
-  using VisibleCallback = llvm::function_ref<void(Module *M)>;
-
+  typedef llvm::function_ref<void(Module *M)> VisibleCallback;
   /// \brief A callback to call when a module conflict is found. \p Path
   /// consists of a sequence of modules from the conflicting module to the one
   /// made visible, where each was exported by the next.
-  using ConflictCallback =
-      llvm::function_ref<void(ArrayRef<Module *> Path, Module *Conflict,
-                         StringRef Message)>;
-
+  typedef llvm::function_ref<void(ArrayRef<Module *> Path,
+                                  Module *Conflict, StringRef Message)>
+      ConflictCallback;
   /// \brief Make a specific module visible.
   void setVisible(Module *M, SourceLocation Loc,
                   VisibleCallback Vis = [](Module *) {},
@@ -634,11 +616,11 @@ private:
   /// Import locations for each visible module. Indexed by the module's
   /// VisibilityID.
   std::vector<SourceLocation> ImportLocs;
-
   /// Visibility generation, bumped every time the visibility state changes.
-  unsigned Generation = 0;
+  unsigned Generation;
 };
 
-} // namespace clang
+} // end namespace clang
+
 
 #endif // LLVM_CLANG_BASIC_MODULE_H

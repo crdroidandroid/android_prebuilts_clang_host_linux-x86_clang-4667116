@@ -350,7 +350,9 @@ class Type;
 
     /// Return an expression representing the value of this expression
     /// one iteration of the loop ahead.
-    const SCEVAddRecExpr *getPostIncExpr(ScalarEvolution &SE) const;
+    const SCEVAddRecExpr *getPostIncExpr(ScalarEvolution &SE) const {
+      return cast<SCEVAddRecExpr>(SE.getAddExpr(this, getStepRecurrence(SE)));
+    }
 
     /// Methods for support type inquiry through isa, cast, and dyn_cast:
     static bool classof(const SCEV *S) {
@@ -740,8 +742,8 @@ class Type;
 
     const SCEV *visitAddRecExpr(const SCEVAddRecExpr *Expr) {
       SmallVector<const SCEV *, 2> Operands;
-      for (const SCEV *Op : Expr->operands())
-        Operands.push_back(visit(Op));
+      for (int i = 0, e = Expr->getNumOperands(); i < e; ++i)
+        Operands.push_back(visit(Expr->getOperand(i)));
 
       const Loop *L = Expr->getLoop();
       const SCEV *Res = SE.getAddRecExpr(Operands, L, Expr->getNoWrapFlags());

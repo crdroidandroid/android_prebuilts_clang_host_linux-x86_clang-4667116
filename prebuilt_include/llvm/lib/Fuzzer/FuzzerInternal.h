@@ -63,19 +63,17 @@ public:
   static void StaticExitCallback();
   static void StaticInterruptCallback();
   static void StaticFileSizeExceedCallback();
-  static void StaticGracefulExitCallback();
 
   void ExecuteCallback(const uint8_t *Data, size_t Size);
   bool RunOne(const uint8_t *Data, size_t Size, bool MayDeleteFile = false,
-              InputInfo *II = nullptr, bool *FoundUniqFeatures = nullptr);
+              InputInfo *II = nullptr);
 
   // Merge Corpora[1:] into Corpora[0].
   void Merge(const Vector<std::string> &Corpora);
   void CrashResistantMerge(const Vector<std::string> &Args,
                            const Vector<std::string> &Corpora,
                            const char *CoverageSummaryInputPathOrNull,
-                           const char *CoverageSummaryOutputPathOrNull,
-                           const char *MergeControlFilePathOrNull);
+                           const char *CoverageSummaryOutputPathOrNull);
   void CrashResistantMergeInternalStep(const std::string &ControlFilePath);
   MutationDispatcher &GetMD() { return MD; }
   void PrintFinalStats();
@@ -95,11 +93,9 @@ private:
   void AlarmCallback();
   void CrashCallback();
   void ExitCallback();
-  void MaybeExitGracefully();
   void CrashOnOverwrittenData();
   void InterruptCallback();
   void MutateAndTestOne();
-  void PurgeAllocator();
   void ReportNewCoverage(InputInfo *II, const Unit &U);
   void PrintPulseAndReportSlowInput(const uint8_t *Data, size_t Size);
   void WriteToOutputCorpus(const Unit &U);
@@ -118,17 +114,15 @@ private:
   uint8_t BaseSha1[kSHA1NumBytes];  // Checksum of the base unit.
   bool RunningCB = false;
 
-  bool GracefulExitRequested = false;
-
   size_t TotalNumberOfRuns = 0;
   size_t NumberOfNewUnitsAdded = 0;
 
   size_t LastCorpusUpdateRun = 0;
+  system_clock::time_point LastCorpusUpdateTime = system_clock::now();
+
 
   bool HasMoreMallocsThanFrees = false;
   size_t NumberOfLeakDetectionAttempts = 0;
-
-  system_clock::time_point LastAllocatorPurgeAttemptTime = system_clock::now();
 
   UserCallback CB;
   InputCorpus &Corpus;

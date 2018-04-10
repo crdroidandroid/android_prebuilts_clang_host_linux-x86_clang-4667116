@@ -175,7 +175,8 @@ class ProcResourceKind;
 // BufferSize=1.
 //
 // SchedModel ties these units to a processor for any stand-alone defs
-// of this class.
+// of this class. Instances of subclass ProcResource will be automatically
+// attached to a processor, so SchedModel is not needed.
 class ProcResourceUnits<ProcResourceKind kind, int num> {
   ProcResourceKind Kind = kind;
   int NumUnits = num;

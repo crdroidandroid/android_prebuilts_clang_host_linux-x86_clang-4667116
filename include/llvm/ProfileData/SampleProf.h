@@ -185,9 +185,7 @@ raw_ostream &operator<<(raw_ostream &OS, const SampleRecord &Sample);
 class FunctionSamples;
 
 using BodySampleMap = std::map<LineLocation, SampleRecord>;
-// NOTE: Using a StringMap here makes parsed profiles consume around 17% more
-// memory, which is *very* significant for large profiles.
-using FunctionSamplesMap = std::map<std::string, FunctionSamples>;
+using FunctionSamplesMap = StringMap<FunctionSamples>;
 using CallsiteSampleMap = std::map<LineLocation, FunctionSamplesMap>;
 
 /// Representation of the samples collected for a function.
@@ -226,8 +224,8 @@ public:
 
   sampleprof_error addCalledTargetSamples(uint32_t LineOffset,
                                           uint32_t Discriminator,
-                                          StringRef FName, uint64_t Num,
-                                          uint64_t Weight = 1) {
+                                          const std::string &FName,
+                                          uint64_t Num, uint64_t Weight = 1) {
     return BodySamples[LineLocation(LineOffset, Discriminator)].addCalledTarget(
         FName, Num, Weight);
   }
@@ -280,7 +278,7 @@ public:
       return nullptr;
     auto FS = iter->second.find(CalleeName);
     if (FS != iter->second.end())
-      return &FS->second;
+      return &FS->getValue();
     // If we cannot find exact match of the callee name, return the FS with
     // the max total count.
     uint64_t MaxTotalSamples = 0;
@@ -349,20 +347,22 @@ public:
       const LineLocation &Loc = I.first;
       FunctionSamplesMap &FSMap = functionSamplesAt(Loc);
       for (const auto &Rec : I.second)
-        MergeResult(Result, FSMap[Rec.first].merge(Rec.second, Weight));
+        MergeResult(Result, FSMap[Rec.first()].merge(Rec.second, Weight));
     }
     return Result;
   }
 
-  /// Recursively traverses all children, if the total sample count of the
-  /// corresponding function is no less than \p Threshold, add its corresponding
-  /// GUID to \p S. Also traverse the BodySamples to add hot CallTarget's GUID
-  /// to \p S.
-  void findInlinedFunctions(DenseSet<GlobalValue::GUID> &S, const Module *M,
-                            uint64_t Threshold) const {
+  /// Recursively traverses all children, if the corresponding function is
+  /// not defined in module \p M, and its total sample is no less than
+  /// \p Threshold, add its corresponding GUID to \p S. Also traverse the
+  /// BodySamples to add hot CallTarget's GUID to \p S.
+  void findImportedFunctions(DenseSet<GlobalValue::GUID> &S, const Module *M,
+                             uint64_t Threshold) const {
     if (TotalSamples <= Threshold)
       return;
-    S.insert(Function::getGUID(Name));
+    Function *F = M->getFunction(Name);
+    if (!F || !F->getSubprogram())
+      S.insert(Function::getGUID(Name));
     // Import hot CallTargets, which may not be available in IR because full
     // profile annotation cannot be done until backend compilation in ThinLTO.
     for (const auto &BS : BodySamples)
@@ -372,9 +372,9 @@ public:
           if (!Callee || !Callee->getSubprogram())
             S.insert(Function::getGUID(TS.getKey()));
         }
-    for (const auto &CS : CallsiteSamples)
+    for (auto CS : CallsiteSamples)
       for (const auto &NameFS : CS.second)
-        NameFS.second.findInlinedFunctions(S, M, Threshold);
+        NameFS.second.findImportedFunctions(S, M, Threshold);
   }
 
   /// Set the name of the function.
@@ -382,21 +382,6 @@ public:
 
   /// Return the function name.
   const StringRef &getName() const { return Name; }
-
-  /// Returns the line offset to the start line of the subprogram.
-  /// We assume that a single function will not exceed 65535 LOC.
-  static unsigned getOffset(const DILocation *DIL);
-
-  /// \brief Get the FunctionSamples of the inline instance where DIL originates
-  /// from.
-  ///
-  /// The FunctionSamples of the instruction (Machine or IR) associated to
-  /// \p DIL is the inlined instance in which that instruction is coming from.
-  /// We traverse the inline stack of that instruction, and match it with the
-  /// tree nodes in the profile.
-  ///
-  /// \returns the FunctionSamples pointer to the inlined instance.
-  const FunctionSamples *findFunctionSamples(const DILocation *DIL) const;
 
 private:
   /// Mangled name of the function.

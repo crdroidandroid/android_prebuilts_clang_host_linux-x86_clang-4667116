@@ -95,7 +95,6 @@ private:
   bool SRetAfterThis : 1;   // isIndirect()
   bool InReg : 1;           // isDirect() || isExtend() || isIndirect()
   bool CanBeFlattened: 1;   // isDirect()
-  bool SignExt : 1;         // isExtend()
 
   bool canHavePaddingType() const {
     return isDirect() || isExtend() || isIndirect() || isExpand();
@@ -134,38 +133,15 @@ public:
     AI.setInReg(true);
     return AI;
   }
-
-  static ABIArgInfo getSignExtend(QualType Ty, llvm::Type *T = nullptr) {
-    assert(Ty->isIntegralOrEnumerationType() && "Unexpected QualType");
+  static ABIArgInfo getExtend(llvm::Type *T = nullptr) {
     auto AI = ABIArgInfo(Extend);
     AI.setCoerceToType(T);
     AI.setPaddingType(nullptr);
     AI.setDirectOffset(0);
-    AI.setSignExt(true);
     return AI;
   }
-
-  static ABIArgInfo getZeroExtend(QualType Ty, llvm::Type *T = nullptr) {
-    assert(Ty->isIntegralOrEnumerationType() && "Unexpected QualType");
-    auto AI = ABIArgInfo(Extend);
-    AI.setCoerceToType(T);
-    AI.setPaddingType(nullptr);
-    AI.setDirectOffset(0);
-    AI.setSignExt(false);
-    return AI;
-  }
-
-  // ABIArgInfo will record the argument as being extended based on the sign
-  // of its type.
-  static ABIArgInfo getExtend(QualType Ty, llvm::Type *T = nullptr) {
-    assert(Ty->isIntegralOrEnumerationType() && "Unexpected QualType");
-    if (Ty->hasSignedIntegerRepresentation())
-      return getSignExtend(Ty, T);
-    return getZeroExtend(Ty, T);
-  }
-
-  static ABIArgInfo getExtendInReg(QualType Ty, llvm::Type *T = nullptr) {
-    auto AI = getExtend(Ty, T);
+  static ABIArgInfo getExtendInReg(llvm::Type *T = nullptr) {
+    auto AI = getExtend(T);
     AI.setInReg(true);
     return AI;
   }
@@ -276,15 +252,6 @@ public:
   void setDirectOffset(unsigned Offset) {
     assert((isDirect() || isExtend()) && "Not a direct or extend kind");
     DirectOffset = Offset;
-  }
-
-  bool isSignExt() const {
-    assert(isExtend() && "Invalid kind!");
-    return SignExt;
-  }
-  void setSignExt(bool SExt) {
-    assert(isExtend() && "Invalid kind!");
-    SignExt = SExt;
   }
 
   llvm::Type *getPaddingType() const {
