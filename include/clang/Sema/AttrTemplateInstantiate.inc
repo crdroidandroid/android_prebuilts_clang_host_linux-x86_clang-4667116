@@ -111,7 +111,7 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::AllocSize: {
       const auto *A = cast<AllocSizeAttr>(At);
-      return new (C) AllocSizeAttr(A->getLocation(), C, A->getElemSizeParam(), A->getNumElemsParam(), A->getSpellingListIndex());
+      return new (C) AllocSizeAttr(A->getLocation(), C, A->elemSizeParam(), A->numElemsParam(), A->getSpellingListIndex());
     }
     case attr::AlwaysInline: {
       const auto *A = cast<AlwaysInlineAttr>(At);
@@ -139,6 +139,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::ArgumentWithTypeTag: {
       const auto *A = cast<ArgumentWithTypeTagAttr>(At);
+      return A->clone(C);
+    }
+    case attr::Artificial: {
+      const auto *A = cast<ArtificialAttr>(At);
       return A->clone(C);
     }
     case attr::AsmLabel: {
@@ -995,6 +999,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<TransparentUnionAttr>(At);
       return A->clone(C);
     }
+    case attr::TrivialABI: {
+      const auto *A = cast<TrivialABIAttr>(At);
+      return A->clone(C);
+    }
     case attr::TryAcquireCapability: {
       const auto *A = cast<TryAcquireCapabilityAttr>(At);
       Expr * tempInstSuccessValue;
@@ -1170,6 +1178,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
       return nullptr;
     }
     case attr::ArgumentWithTypeTag: {
+      return nullptr;
+    }
+    case attr::Artificial: {
       return nullptr;
     }
     case attr::AsmLabel: {
@@ -1714,6 +1725,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
       return nullptr;
     }
     case attr::TransparentUnion: {
+      return nullptr;
+    }
+    case attr::TrivialABI: {
       return nullptr;
     }
     case attr::TryAcquireCapability: {

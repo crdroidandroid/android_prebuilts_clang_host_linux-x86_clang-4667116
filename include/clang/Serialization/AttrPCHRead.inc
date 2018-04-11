@@ -179,8 +179,9 @@
     bool isInherited = Record.readInt();
     bool isImplicit = Record.readInt();
     unsigned Spelling = Record.readInt();
-    int paramIndex = Record.readInt();
-    New = new (Context) AllocAlignAttr(Range, Context, paramIndex, Spelling);
+    unsigned ParamIndexSrc = Record.readInt();
+    bool ParamIndexHasThis = Record.readInt();
+    New = new (Context) AllocAlignAttr(Range, Context, ParamIdx(ParamIndexSrc, ParamIndexHasThis), Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -189,9 +190,11 @@
     bool isInherited = Record.readInt();
     bool isImplicit = Record.readInt();
     unsigned Spelling = Record.readInt();
-    int elemSizeParam = Record.readInt();
-    int numElemsParam = Record.readInt();
-    New = new (Context) AllocSizeAttr(Range, Context, elemSizeParam, numElemsParam, Spelling);
+    unsigned ElemSizeParamSrc = Record.readInt();
+    bool ElemSizeParamHasThis = Record.readInt();
+    unsigned NumElemsParamSrc = Record.readInt();
+    bool NumElemsParamHasThis = Record.readInt();
+    New = new (Context) AllocSizeAttr(Range, Context, ParamIdx(ElemSizeParamSrc, ElemSizeParamHasThis), ParamIdx(NumElemsParamSrc, NumElemsParamHasThis), Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -256,10 +259,21 @@
     bool isImplicit = Record.readInt();
     unsigned Spelling = Record.readInt();
     IdentifierInfo * argumentKind = Record.getIdentifierInfo();
-    unsigned argumentIdx = Record.readInt();
-    unsigned typeTagIdx = Record.readInt();
+    unsigned ArgumentIdxSrc = Record.readInt();
+    bool ArgumentIdxHasThis = Record.readInt();
+    unsigned TypeTagIdxSrc = Record.readInt();
+    bool TypeTagIdxHasThis = Record.readInt();
     bool isPointer = Record.readInt();
-    New = new (Context) ArgumentWithTypeTagAttr(Range, Context, argumentKind, argumentIdx, typeTagIdx, isPointer, Spelling);
+    New = new (Context) ArgumentWithTypeTagAttr(Range, Context, argumentKind, ParamIdx(ArgumentIdxSrc, ArgumentIdxHasThis), ParamIdx(TypeTagIdxSrc, TypeTagIdxHasThis), isPointer, Spelling);
+    cast<InheritableAttr>(New)->setInherited(isInherited);
+    New->setImplicit(isImplicit);
+    break;
+  }
+  case attr::Artificial: {
+    bool isInherited = Record.readInt();
+    bool isImplicit = Record.readInt();
+    unsigned Spelling = Record.readInt();
+    New = new (Context) ArtificialAttr(Range, Context, Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -795,8 +809,9 @@
     bool isInherited = Record.readInt();
     bool isImplicit = Record.readInt();
     unsigned Spelling = Record.readInt();
-    int formatIdx = Record.readInt();
-    New = new (Context) FormatArgAttr(Range, Context, formatIdx, Spelling);
+    unsigned FormatIdxSrc = Record.readInt();
+    bool FormatIdxHasThis = Record.readInt();
+    New = new (Context) FormatArgAttr(Range, Context, ParamIdx(FormatIdxSrc, FormatIdxHasThis), Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -1293,12 +1308,14 @@
     bool isInherited = Record.readInt();
     bool isImplicit = Record.readInt();
     unsigned Spelling = Record.readInt();
-    unsigned argsSize = Record.readInt();
-    SmallVector<unsigned, 4> args;
-    args.reserve(argsSize);
-    for (unsigned i = 0; i != argsSize; ++i)
-      args.push_back(Record.readInt());
-    New = new (Context) NonNullAttr(Range, Context, args.data(), argsSize, Spelling);
+    unsigned ArgsSize = Record.readInt();
+    bool ArgsHasThis = ArgsSize ? Record.readInt() : false;
+    SmallVector<ParamIdx, 4> Args;
+    Args.reserve(ArgsSize);
+    for (unsigned i = 0; i != ArgsSize; ++i) {
+      Args.push_back(ParamIdx(Record.readInt(), ArgsHasThis));
+    }
+    New = new (Context) NonNullAttr(Range, Context, Args.data(), ArgsSize, Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -1612,12 +1629,14 @@
     bool isImplicit = Record.readInt();
     unsigned Spelling = Record.readInt();
     IdentifierInfo * module = Record.getIdentifierInfo();
-    unsigned argsSize = Record.readInt();
-    SmallVector<unsigned, 4> args;
-    args.reserve(argsSize);
-    for (unsigned i = 0; i != argsSize; ++i)
-      args.push_back(Record.readInt());
-    New = new (Context) OwnershipAttr(Range, Context, module, args.data(), argsSize, Spelling);
+    unsigned ArgsSize = Record.readInt();
+    bool ArgsHasThis = ArgsSize ? Record.readInt() : false;
+    SmallVector<ParamIdx, 4> Args;
+    Args.reserve(ArgsSize);
+    for (unsigned i = 0; i != ArgsSize; ++i) {
+      Args.push_back(ParamIdx(Record.readInt(), ArgsHasThis));
+    }
+    New = new (Context) OwnershipAttr(Range, Context, module, Args.data(), ArgsSize, Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -2043,6 +2062,15 @@
     bool isImplicit = Record.readInt();
     unsigned Spelling = Record.readInt();
     New = new (Context) TransparentUnionAttr(Range, Context, Spelling);
+    cast<InheritableAttr>(New)->setInherited(isInherited);
+    New->setImplicit(isImplicit);
+    break;
+  }
+  case attr::TrivialABI: {
+    bool isInherited = Record.readInt();
+    bool isImplicit = Record.readInt();
+    unsigned Spelling = Record.readInt();
+    New = new (Context) TrivialABIAttr(Range, Context, Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;

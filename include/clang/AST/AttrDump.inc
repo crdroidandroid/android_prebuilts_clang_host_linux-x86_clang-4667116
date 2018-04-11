@@ -108,13 +108,14 @@
   }
   case attr::AllocAlign: {
     const auto *SA = cast<AllocAlignAttr>(A);
-    OS << " " << SA->getParamIndex();
+    OS << " " << SA->paramIndex().getSourceIndex();
     break;
   }
   case attr::AllocSize: {
     const auto *SA = cast<AllocSizeAttr>(A);
-    OS << " " << SA->getElemSizeParam();
-    OS << " " << SA->getNumElemsParam();
+    OS << " " << SA->elemSizeParam().getSourceIndex();
+    if (SA->numElemsParam().isValid())
+      OS << " " << SA->numElemsParam().getSourceIndex();
     break;
   }
   case attr::AlwaysInline: {
@@ -141,10 +142,14 @@
   case attr::ArgumentWithTypeTag: {
     OS << " " << A->getSpelling();
     const auto *SA = cast<ArgumentWithTypeTagAttr>(A);
-    OS << " " << SA->getArgumentKind()->getName();
-    OS << " " << SA->getArgumentIdx();
-    OS << " " << SA->getTypeTagIdx();
+    if (SA->getArgumentKind())
+      OS << " " << SA->getArgumentKind()->getName();
+    OS << " " << SA->argumentIdx().getSourceIndex();
+    OS << " " << SA->typeTagIdx().getSourceIndex();
     if (SA->getIsPointer()) OS << " IsPointer";
+    break;
+  }
+  case attr::Artificial: {
     break;
   }
   case attr::AsmLabel: {
@@ -179,7 +184,8 @@
   }
   case attr::Availability: {
     const auto *SA = cast<AvailabilityAttr>(A);
-    OS << " " << SA->getPlatform()->getName();
+    if (SA->getPlatform())
+      OS << " " << SA->getPlatform()->getName();
     OS << " " << SA->getIntroduced();
     OS << " " << SA->getDeprecated();
     OS << " " << SA->getObsoleted();
@@ -409,14 +415,15 @@
   }
   case attr::Format: {
     const auto *SA = cast<FormatAttr>(A);
-    OS << " " << SA->getType()->getName();
+    if (SA->getType())
+      OS << " " << SA->getType()->getName();
     OS << " " << SA->getFormatIdx();
     OS << " " << SA->getFirstArg();
     break;
   }
   case attr::FormatArg: {
     const auto *SA = cast<FormatArgAttr>(A);
-    OS << " " << SA->getFormatIdx();
+    OS << " " << SA->formatIdx().getSourceIndex();
     break;
   }
   case attr::GNUInline: {
@@ -615,7 +622,8 @@
   }
   case attr::Mode: {
     const auto *SA = cast<ModeAttr>(A);
-    OS << " " << SA->getMode()->getName();
+    if (SA->getMode())
+      OS << " " << SA->getMode()->getName();
     break;
   }
   case attr::NSConsumed: {
@@ -683,8 +691,8 @@
   }
   case attr::NonNull: {
     const auto *SA = cast<NonNullAttr>(A);
-    for (const auto &Val : SA->args())
-      OS << " " << Val;
+    for (auto Idx : SA->args())
+      OS << " " << Idx.getSourceIndex();
     break;
   }
   case attr::NotTailCalled: {
@@ -746,17 +754,20 @@
   }
   case attr::ObjCBridge: {
     const auto *SA = cast<ObjCBridgeAttr>(A);
-    OS << " " << SA->getBridgedType()->getName();
+    if (SA->getBridgedType())
+      OS << " " << SA->getBridgedType()->getName();
     break;
   }
   case attr::ObjCBridgeMutable: {
     const auto *SA = cast<ObjCBridgeMutableAttr>(A);
-    OS << " " << SA->getBridgedType()->getName();
+    if (SA->getBridgedType())
+      OS << " " << SA->getBridgedType()->getName();
     break;
   }
   case attr::ObjCBridgeRelated: {
     const auto *SA = cast<ObjCBridgeRelatedAttr>(A);
-    OS << " " << SA->getRelatedClass()->getName();
+    if (SA->getRelatedClass())
+      OS << " " << SA->getRelatedClass()->getName();
     if (SA->getClassMethod())
       OS << " " << SA->getClassMethod()->getName();
     if (SA->getInstanceMethod())
@@ -857,9 +868,10 @@
   case attr::Ownership: {
     OS << " " << A->getSpelling();
     const auto *SA = cast<OwnershipAttr>(A);
-    OS << " " << SA->getModule()->getName();
-    for (const auto &Val : SA->args())
-      OS << " " << Val;
+    if (SA->getModule())
+      OS << " " << SA->getModule()->getName();
+    for (auto Idx : SA->args())
+      OS << " " << Idx.getSourceIndex();
     break;
   }
   case attr::Packed: {
@@ -1087,6 +1099,9 @@
   case attr::TransparentUnion: {
     break;
   }
+  case attr::TrivialABI: {
+    break;
+  }
   case attr::TryAcquireCapability: {
     OS << " " << A->getSpelling();
     const auto *SA = cast<TryAcquireCapabilityAttr>(A);
@@ -1097,7 +1112,8 @@
   }
   case attr::TypeTagForDatatype: {
     const auto *SA = cast<TypeTagForDatatypeAttr>(A);
-    OS << " " << SA->getArgumentKind()->getName();
+    if (SA->getArgumentKind())
+      OS << " " << SA->getArgumentKind()->getName();
     OS << " " << SA->getMatchingCType().getAsString();
     if (SA->getLayoutCompatible()) OS << " LayoutCompatible";
     if (SA->getMustBeNull()) OS << " MustBeNull";

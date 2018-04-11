@@ -140,7 +140,8 @@ Record.push_back(SA->getInterrupt());
     Record.push_back(SA->isInherited());
     Record.push_back(A->isImplicit());
     Record.push_back(A->getSpellingListIndex());
-    Record.push_back(SA->getParamIndex());
+    Record.push_back(SA->paramIndex().isValid() ? SA->paramIndex().getSourceIndex() : 0);
+    Record.push_back(SA->paramIndex().isValid() ? SA->paramIndex().hasThis() : false);
     break;
   }
   case attr::AllocSize: {
@@ -148,8 +149,10 @@ Record.push_back(SA->getInterrupt());
     Record.push_back(SA->isInherited());
     Record.push_back(A->isImplicit());
     Record.push_back(A->getSpellingListIndex());
-    Record.push_back(SA->getElemSizeParam());
-    Record.push_back(SA->getNumElemsParam());
+    Record.push_back(SA->elemSizeParam().isValid() ? SA->elemSizeParam().getSourceIndex() : 0);
+    Record.push_back(SA->elemSizeParam().isValid() ? SA->elemSizeParam().hasThis() : false);
+    Record.push_back(SA->numElemsParam().isValid() ? SA->numElemsParam().getSourceIndex() : 0);
+    Record.push_back(SA->numElemsParam().isValid() ? SA->numElemsParam().hasThis() : false);
     break;
   }
   case attr::AlwaysInline: {
@@ -201,9 +204,18 @@ Record.push_back(SA->getInterrupt());
     Record.push_back(A->isImplicit());
     Record.push_back(A->getSpellingListIndex());
     Record.AddIdentifierRef(SA->getArgumentKind());
-    Record.push_back(SA->getArgumentIdx());
-    Record.push_back(SA->getTypeTagIdx());
+    Record.push_back(SA->argumentIdx().isValid() ? SA->argumentIdx().getSourceIndex() : 0);
+    Record.push_back(SA->argumentIdx().isValid() ? SA->argumentIdx().hasThis() : false);
+    Record.push_back(SA->typeTagIdx().isValid() ? SA->typeTagIdx().getSourceIndex() : 0);
+    Record.push_back(SA->typeTagIdx().isValid() ? SA->typeTagIdx().hasThis() : false);
     Record.push_back(SA->getIsPointer());
+    break;
+  }
+  case attr::Artificial: {
+    const auto *SA = cast<ArtificialAttr>(A);
+    Record.push_back(SA->isInherited());
+    Record.push_back(A->isImplicit());
+    Record.push_back(A->getSpellingListIndex());
     break;
   }
   case attr::AsmLabel: {
@@ -624,7 +636,8 @@ Record.push_back(SA->getExtensibility());
     Record.push_back(SA->isInherited());
     Record.push_back(A->isImplicit());
     Record.push_back(A->getSpellingListIndex());
-    Record.push_back(SA->getFormatIdx());
+    Record.push_back(SA->formatIdx().isValid() ? SA->formatIdx().getSourceIndex() : 0);
+    Record.push_back(SA->formatIdx().isValid() ? SA->formatIdx().hasThis() : false);
     break;
   }
   case attr::GNUInline: {
@@ -1013,8 +1026,10 @@ Record.push_back(SA->getInterrupt());
     Record.push_back(A->isImplicit());
     Record.push_back(A->getSpellingListIndex());
     Record.push_back(SA->args_size());
-    for (auto &Val : SA->args())
-      Record.push_back(Val);
+    if (SA->args_size())
+      Record.push_back(SA->args_begin()->hasThis());
+    for (auto Idx : SA->args())
+      Record.push_back(Idx.getSourceIndex());
     break;
   }
   case attr::NotTailCalled: {
@@ -1258,8 +1273,10 @@ Record.push_back(SA->getFamily());
     Record.push_back(A->getSpellingListIndex());
     Record.AddIdentifierRef(SA->getModule());
     Record.push_back(SA->args_size());
-    for (auto &Val : SA->args())
-      Record.push_back(Val);
+    if (SA->args_size())
+      Record.push_back(SA->args_begin()->hasThis());
+    for (auto Idx : SA->args())
+      Record.push_back(Idx.getSourceIndex());
     break;
   }
   case attr::Packed: {
@@ -1585,6 +1602,13 @@ Record.push_back(SA->getTestState());
   }
   case attr::TransparentUnion: {
     const auto *SA = cast<TransparentUnionAttr>(A);
+    Record.push_back(SA->isInherited());
+    Record.push_back(A->isImplicit());
+    Record.push_back(A->getSpellingListIndex());
+    break;
+  }
+  case attr::TrivialABI: {
+    const auto *SA = cast<TrivialABIAttr>(A);
     Record.push_back(SA->isInherited());
     Record.push_back(A->isImplicit());
     Record.push_back(A->getSpellingListIndex());

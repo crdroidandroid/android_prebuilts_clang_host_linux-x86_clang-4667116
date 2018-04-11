@@ -6,7 +6,7 @@
 #define CLANG_CONFIG_H
 
 /* Bug report URL. */
-#define BUG_REPORT_URL "http://llvm.org/bugs/"
+#define BUG_REPORT_URL "https://bugs.llvm.org/"
 
 /* Default linker to use. */
 #define CLANG_DEFAULT_LINKER ""
@@ -17,11 +17,14 @@
 /* Default runtime library to use. */
 #define CLANG_DEFAULT_RTLIB ""
 
+/* Default objcopy to use */
+#define CLANG_DEFAULT_OBJCOPY "objcopy"
+
 /* Default OpenMP runtime used by -fopenmp. */
 #define CLANG_DEFAULT_OPENMP_RUNTIME "libomp"
 
 /* Default architecture for OpenMP offloading to Nvidia GPUs. */
-#define CLANG_OPENMP_NVPTX_DEFAULT_ARCH "sm_30"
+#define CLANG_OPENMP_NVPTX_DEFAULT_ARCH "sm_35"
 
 /* Multilib suffix for libdir. */
 #define CLANG_LIBDIR_SUFFIX "64"
@@ -31,6 +34,10 @@
 
 /* Directories clang will search for headers */
 #define C_INCLUDE_DIRS ""
+
+/* Directories clang will search for configuration files */
+/* #undef CLANG_CONFIG_FILE_SYSTEM_DIR */
+/* #undef CLANG_CONFIG_FILE_USER_DIR */
 
 /* Default <path> to all compiler invocations for --sysroot=<path>. */
 #define DEFAULT_SYSROOT ""
@@ -48,7 +55,7 @@
 #define CLANG_HAVE_RLIMITS 1
 
 /* The LLVM product name and version */
-#define BACKEND_PACKAGE_STRING "LLVM 6.0.2svn"
+#define BACKEND_PACKAGE_STRING "LLVM 7.0.1svn"
 
 /* Linker version detected at compile time. */
 /* #undef HOST_LINK_VERSION */

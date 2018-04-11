@@ -104,6 +104,10 @@
   bool VisitArgumentWithTypeTagAttr(ArgumentWithTypeTagAttr *A) {
     return true; 
   }
+  bool TraverseArtificialAttr(ArtificialAttr *A);
+  bool VisitArtificialAttr(ArtificialAttr *A) {
+    return true; 
+  }
   bool TraverseAsmLabelAttr(AsmLabelAttr *A);
   bool VisitAsmLabelAttr(AsmLabelAttr *A) {
     return true; 
@@ -828,6 +832,10 @@
   bool VisitTransparentUnionAttr(TransparentUnionAttr *A) {
     return true; 
   }
+  bool TraverseTrivialABIAttr(TrivialABIAttr *A);
+  bool VisitTrivialABIAttr(TrivialABIAttr *A) {
+    return true; 
+  }
   bool TraverseTryAcquireCapabilityAttr(TryAcquireCapabilityAttr *A);
   bool VisitTryAcquireCapabilityAttr(TryAcquireCapabilityAttr *A) {
     return true; 
@@ -1156,6 +1164,15 @@ bool VISITORCLASS<Derived>::TraverseArgumentWithTypeTagAttr(ArgumentWithTypeTagA
   if (!getDerived().VisitAttr(A))
     return false;
   if (!getDerived().VisitArgumentWithTypeTagAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseArtificialAttr(ArtificialAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitArtificialAttr(A))
     return false;
   return true;
 }
@@ -2923,6 +2940,15 @@ bool VISITORCLASS<Derived>::TraverseTransparentUnionAttr(TransparentUnionAttr *A
 }
 
 template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseTrivialABIAttr(TrivialABIAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitTrivialABIAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
 bool VISITORCLASS<Derived>::TraverseTryAcquireCapabilityAttr(TryAcquireCapabilityAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
@@ -3172,6 +3198,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseArcWeakrefUnavailableAttr(cast<ArcWeakrefUnavailableAttr>(A));
     case attr::ArgumentWithTypeTag:
       return getDerived().TraverseArgumentWithTypeTagAttr(cast<ArgumentWithTypeTagAttr>(A));
+    case attr::Artificial:
+      return getDerived().TraverseArtificialAttr(cast<ArtificialAttr>(A));
     case attr::AsmLabel:
       return getDerived().TraverseAsmLabelAttr(cast<AsmLabelAttr>(A));
     case attr::AssertCapability:
@@ -3534,6 +3562,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseThreadAttr(cast<ThreadAttr>(A));
     case attr::TransparentUnion:
       return getDerived().TraverseTransparentUnionAttr(cast<TransparentUnionAttr>(A));
+    case attr::TrivialABI:
+      return getDerived().TraverseTrivialABIAttr(cast<TrivialABIAttr>(A));
     case attr::TryAcquireCapability:
       return getDerived().TraverseTryAcquireCapabilityAttr(cast<TryAcquireCapabilityAttr>(A));
     case attr::TypeTagForDatatype:
