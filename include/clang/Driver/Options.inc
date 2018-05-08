@@ -912,7 +912,8 @@ OPTION(prefix_1, "fmax-stack-var-size=", fmax_stack_var_size_EQ, Joined, gfortra
 OPTION(prefix_1, "fmax-subrecord-length=", fmax_subrecord_length_EQ, Joined, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "fmax-type-align=", fmax_type_align_EQ, Joined, f_Group, INVALID, nullptr, CC1Option, 0,
        "Specify the maximum alignment to enforce on pointers lacking an explicit alignment", nullptr, nullptr)
-OPTION(prefix_1, "fmerge-all-constants", fmerge_all_constants, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
+OPTION(prefix_1, "fmerge-all-constants", fmerge_all_constants, Flag, f_Group, INVALID, nullptr, CC1Option, 0,
+       "Allow merging of constants", nullptr, nullptr)
 OPTION(prefix_1, "fmerge-constants", merge_constants_f, Flag, clang_ignored_gcc_optimization_f_Group, INVALID, nullptr, Ignored, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "fmerge-functions", fmerge_functions, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Permit merging of identical functions when optimizing.", nullptr, nullptr)
@@ -1180,7 +1181,7 @@ OPTION(prefix_1, "fno-math-builtin", fno_math_builtin, Flag, INVALID, INVALID, n
 OPTION(prefix_1, "fno-math-errno", fno_math_errno, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "fno-max-identifier-length", max_identifier_length_fno, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "fno-max-type-align", fno_max_type_align, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
-OPTION(prefix_1, "fno-merge-all-constants", fno_merge_all_constants, Flag, f_Group, INVALID, nullptr, CC1Option, 0,
+OPTION(prefix_1, "fno-merge-all-constants", fno_merge_all_constants, Flag, f_Group, INVALID, nullptr, 0, 0,
        "Disallow merging of constants", nullptr, nullptr)
 OPTION(prefix_1, "fno-merge-constants", merge_constants_fno, Flag, clang_ignored_gcc_optimization_f_Group, INVALID, nullptr, Ignored, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "fno-module-file-deps", fno_module_file_deps, Flag, f_Group, INVALID, nullptr, DriverOption, 0, nullptr, nullptr, nullptr)
@@ -1923,7 +1924,7 @@ OPTION(prefix_2, "Gw-", _SLASH_Gw_, Flag, cl_Group, fno_data_sections, nullptr, 
 OPTION(prefix_2, "Gw", _SLASH_Gw, Flag, cl_Group, fdata_sections, nullptr, CLOption | DriverOption | CLOption, 0,
        "Put each data item in its own section", nullptr, nullptr)
 OPTION(prefix_2, "GX-", _SLASH_GX_, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption | CLOption, 0,
-       "Enable exception handling", nullptr, nullptr)
+       "Disable exception handling", nullptr, nullptr)
 OPTION(prefix_1, "gxcoff", gxcoff, Joined, g_Group, INVALID, nullptr, Unsupported, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_2, "GX", _SLASH_GX, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption | CLOption, 0,
        "Enable exception handling", nullptr, nullptr)
@@ -1945,7 +1946,8 @@ OPTION(prefix_1, "g", g_Flag, Flag, g_Group, INVALID, nullptr, 0, 0,
 OPTION(prefix_1, "header-include-file", header_include_file, Separate, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Filename (or -) to write header include output to", nullptr, nullptr)
 OPTION(prefix_1, "headerpad_max_install_names", headerpad__max__install__names, Joined, INVALID, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
-OPTION(prefix_3, "help-hidden", _help_hidden, Flag, INVALID, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
+OPTION(prefix_3, "help-hidden", _help_hidden, Flag, INVALID, INVALID, nullptr, 0, 0,
+       "Display help for hidden options", nullptr, nullptr)
 OPTION(prefix_2, "HELP", _SLASH_HELP, Flag, cl_Group, help, nullptr, CLOption | DriverOption | CLOption, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_4, "help", help, Flag, INVALID, INVALID, nullptr, CC1Option | CC1AsOption, 0,
        "Display available options", nullptr, nullptr)
@@ -2413,6 +2415,8 @@ OPTION(prefix_1, "mno-nontrapping-fptoint", mno_nontrapping_fptoint, Flag, m_was
 OPTION(prefix_1, "mno-odd-spreg", mno_odd_spreg, Flag, m_Group, INVALID, nullptr, HelpHidden, 0,
        "Disable odd single-precision floating point registers", nullptr, nullptr)
 OPTION(prefix_1, "mno-omit-leaf-frame-pointer", mno_omit_leaf_frame_pointer, Flag, m_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
+OPTION(prefix_1, "mno-packets", mno_packets, Flag, m_hexagon_Features_Group, INVALID, nullptr, CC1Option, 0,
+       "Disable generation of instruction packets", nullptr, nullptr)
 OPTION(prefix_1, "mno-pascal-strings", mno_pascal_strings, Flag, INVALID, fno_pascal_strings, nullptr, 0, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "mno-pclmul", mno_pclmul, Flag, m_x86_Features_Group, INVALID, nullptr, CoreOption, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "mno-pie-copy-relocations", mno_pie_copy_relocations, Flag, m_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
@@ -2491,6 +2495,8 @@ OPTION(prefix_1, "module-file-info", module_file_info, Flag, Action_Group, INVAL
 OPTION(prefix_1, "momit-leaf-frame-pointer", momit_leaf_frame_pointer, Flag, m_Group, INVALID, nullptr, CC1Option, 0,
        "Omit frame pointer setup for leaf functions", nullptr, nullptr)
 OPTION(prefix_1, "moslib=", moslib_EQ, Joined, m_Group, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
+OPTION(prefix_1, "mpackets", mpackets, Flag, m_hexagon_Features_Group, INVALID, nullptr, CC1Option, 0,
+       "Enable generation of instruction packets", nullptr, nullptr)
 OPTION(prefix_1, "mpascal-strings", mpascal_strings, Flag, INVALID, fpascal_strings, nullptr, 0, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "mpclmul", mpclmul, Flag, m_x86_Features_Group, INVALID, nullptr, CoreOption, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "mpie-copy-relocations", mpie_copy_relocations, Flag, m_Group, INVALID, nullptr, CC1Option, 0,
@@ -2989,7 +2995,7 @@ OPTION(prefix_2, "TC", _SLASH_TC, Flag, cl_compile_Group, INVALID, nullptr, CLOp
 OPTION(prefix_2, "Tc", _SLASH_Tc, JoinedOrSeparate, cl_compile_Group, INVALID, nullptr, CLOption | DriverOption, 0,
        "Specify a C source file", "<filename>", nullptr)
 OPTION(prefix_1, "Tdata", Tdata, JoinedOrSeparate, T_Group, INVALID, nullptr, 0, 0,
-       "Set starting address of BSS to <addr>", "<addr>", nullptr)
+       "Set starting address of DATA to <addr>", "<addr>", nullptr)
 OPTION(prefix_1, "templight-dump", templight_dump, Flag, Action_Group, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Dump templight information to stdout", nullptr, nullptr)
 OPTION(prefix_1, "test-coverage", test_coverage, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
@@ -3014,7 +3020,7 @@ OPTION(prefix_1, "triple=", triple_EQ, Joined, INVALID, triple, nullptr, CC1Opti
 OPTION(prefix_1, "triple", triple, Separate, INVALID, INVALID, nullptr, CC1Option | CC1AsOption | NoDriverOption, 0,
        "Specify target triple (e.g. i686-apple-darwin9)", nullptr, nullptr)
 OPTION(prefix_1, "Ttext", Ttext, JoinedOrSeparate, T_Group, INVALID, nullptr, 0, 0,
-       "Set starting address of BSS to <addr>", "<addr>", nullptr)
+       "Set starting address of TEXT to <addr>", "<addr>", nullptr)
 OPTION(prefix_1, "twolevel_namespace_hints", twolevel__namespace__hints, Flag, INVALID, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "twolevel_namespace", twolevel__namespace, Flag, INVALID, INVALID, nullptr, 0, 0, nullptr, nullptr, nullptr)
 OPTION(prefix_1, "T", T, JoinedOrSeparate, T_Group, INVALID, nullptr, 0, 0,

@@ -11,6 +11,12 @@
 /* Default linker to use. */
 #define CLANG_DEFAULT_LINKER ""
 
+/* Default C/ObjC standard to use. */
+/* #undef CLANG_DEFAULT_STD_C */
+
+/* Default C++/ObjC++ standard to use. */
+/* #undef CLANG_DEFAULT_STD_CXX */
+
 /* Default C++ stdlib to use. */
 #define CLANG_DEFAULT_CXX_STDLIB ""
 
@@ -55,7 +61,7 @@
 #define CLANG_HAVE_RLIMITS 1
 
 /* The LLVM product name and version */
-#define BACKEND_PACKAGE_STRING "LLVM 7.0.1svn"
+#define BACKEND_PACKAGE_STRING "LLVM 7.0.2svn"
 
 /* Linker version detected at compile time. */
 /* #undef HOST_LINK_VERSION */

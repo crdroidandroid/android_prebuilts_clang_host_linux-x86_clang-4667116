@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget clangBasic clangLex clangParse clangAST clangDynamicASTMatchers clangASTMatchers clangCrossTU clangSema clangCodeGen clangAnalysis clangEdit clangRewrite clangARCMigrate clangDriver clangSerialization clangRewriteFrontend clangFrontend clangFrontendTool clangToolingCore clangToolingRefactor clangToolingASTDiff clangTooling clangIndex clangStaticAnalyzerCore clangStaticAnalyzerCheckers clangStaticAnalyzerFrontend clangFormat clang clang-format clangHandleCXX clang-import-test clang-rename clang-refactor clangApplyReplacements clangReorderFields clang-reorder-fields modularize clangTidy clangTidyAndroidModule clangTidyBoostModule clangTidyBugproneModule clangTidyCERTModule clangTidyCppCoreGuidelinesModule clangTidyFuchsiaModule clangTidyGoogleModule clangTidyHICPPModule clangTidyLLVMModule clangTidyMiscModule clangTidyModernizeModule clangTidyMPIModule clangTidyObjCModule clangTidyPerformanceModule clangTidyPlugin clangTidyReadabilityModule clang-tidy clangTidyUtils clangChangeNamespace clangQuery clangMove clangDaemon clangd clangIncludeFixer clangIncludeFixerPlugin clang-include-fixer findAllSymbols libclang)
+foreach(_expectedTarget clangBasic clangLex clangParse clangAST clangDynamicASTMatchers clangASTMatchers clangCrossTU clangSema clangCodeGen clangAnalysis clangEdit clangRewrite clangARCMigrate clangDriver clangSerialization clangRewriteFrontend clangFrontend clangFrontendTool clangToolingCore clangToolingRefactor clangToolingASTDiff clangTooling clangIndex clangStaticAnalyzerCore clangStaticAnalyzerCheckers clangStaticAnalyzerFrontend clangFormat clang clang-format clangHandleCXX clang-import-test clang-rename clang-refactor clangApplyReplacements clangReorderFields clang-reorder-fields modularize clangTidy clangTidyAndroidModule clangTidyAbseilModule clangTidyBoostModule clangTidyBugproneModule clangTidyCERTModule clangTidyCppCoreGuidelinesModule clangTidyFuchsiaModule clangTidyGoogleModule clangTidyHICPPModule clangTidyLLVMModule clangTidyMiscModule clangTidyModernizeModule clangTidyMPIModule clangTidyObjCModule clangTidyPerformanceModule clangTidyPlugin clangTidyPortabilityModule clangTidyReadabilityModule clang-tidy clangTidyUtils clangTidyZirconModule clangChangeNamespace clangDoc clangQuery clangMove clangDaemon clangd clangIncludeFixer clangIncludeFixerPlugin clang-include-fixer findAllSymbols libclang)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -247,7 +247,7 @@ add_executable(clang-format IMPORTED)
 add_library(clangHandleCXX STATIC IMPORTED)
 
 set_target_properties(clangHandleCXX PROPERTIES
-  INTERFACE_LINK_LIBRARIES "clangBasic;clangCodeGen;clangFrontend;clangLex;clangTooling;LLVMAArch64CodeGen;LLVMAArch64AsmParser;LLVMAArch64AsmPrinter;LLVMAArch64Desc;LLVMAArch64Disassembler;LLVMAArch64Info;LLVMAArch64Utils;LLVMARMCodeGen;LLVMARMAsmParser;LLVMARMAsmPrinter;LLVMARMDesc;LLVMARMDisassembler;LLVMARMInfo;LLVMARMUtils;LLVMBPFCodeGen;LLVMBPFAsmParser;LLVMBPFAsmPrinter;LLVMBPFDesc;LLVMBPFDisassembler;LLVMBPFInfo;LLVMMipsCodeGen;LLVMMipsAsmParser;LLVMMipsAsmPrinter;LLVMMipsDesc;LLVMMipsDisassembler;LLVMMipsInfo;LLVMX86CodeGen;LLVMX86AsmParser;LLVMX86AsmPrinter;LLVMX86Desc;LLVMX86Disassembler;LLVMX86Info;LLVMX86Utils;LLVMSupport"
+  INTERFACE_LINK_LIBRARIES "clangBasic;clangCodeGen;clangFrontend;clangLex;clangTooling;LLVMAArch64CodeGen;LLVMAArch64AsmParser;LLVMAArch64AsmPrinter;LLVMAArch64Desc;LLVMAArch64Disassembler;LLVMAArch64Info;LLVMAArch64Utils;LLVMARMCodeGen;LLVMARMAsmParser;LLVMARMAsmPrinter;LLVMARMDesc;LLVMARMDisassembler;LLVMARMInfo;LLVMARMUtils;LLVMBPFCodeGen;LLVMBPFAsmParser;LLVMBPFAsmPrinter;LLVMBPFDesc;LLVMBPFDisassembler;LLVMBPFInfo;LLVMX86CodeGen;LLVMX86AsmParser;LLVMX86AsmPrinter;LLVMX86Desc;LLVMX86Disassembler;LLVMX86Info;LLVMX86Utils;LLVMSupport"
 )
 
 # Create imported target clang-import-test
@@ -290,6 +290,13 @@ set_target_properties(clangTidy PROPERTIES
 add_library(clangTidyAndroidModule STATIC IMPORTED)
 
 set_target_properties(clangTidyAndroidModule PROPERTIES
+  INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangLex;clangTidy;clangTidyUtils;LLVMSupport"
+)
+
+# Create imported target clangTidyAbseilModule
+add_library(clangTidyAbseilModule STATIC IMPORTED)
+
+set_target_properties(clangTidyAbseilModule PROPERTIES
   INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangLex;clangTidy;clangTidyUtils;LLVMSupport"
 )
 
@@ -388,7 +395,14 @@ set_target_properties(clangTidyPerformanceModule PROPERTIES
 add_library(clangTidyPlugin STATIC IMPORTED)
 
 set_target_properties(clangTidyPlugin PROPERTIES
-  INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangFrontend;clangSema;clangTidy;clangTidyAndroidModule;clangTidyBoostModule;clangTidyCERTModule;clangTidyCppCoreGuidelinesModule;clangTidyGoogleModule;clangTidyLLVMModule;clangTidyMiscModule;clangTidyModernizeModule;clangTidyMPIModule;clangTidyObjCModule;clangTidyPerformanceModule;clangTidyReadabilityModule;clangTooling;LLVMSupport"
+  INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangFrontend;clangSema;clangTidy;clangTidyAndroidModule;clangTidyAbseilModule;clangTidyBoostModule;clangTidyCERTModule;clangTidyCppCoreGuidelinesModule;clangTidyGoogleModule;clangTidyLLVMModule;clangTidyMiscModule;clangTidyModernizeModule;clangTidyMPIModule;clangTidyObjCModule;clangTidyPerformanceModule;clangTidyPortabilityModule;clangTidyReadabilityModule;clangTooling;LLVMSupport"
+)
+
+# Create imported target clangTidyPortabilityModule
+add_library(clangTidyPortabilityModule STATIC IMPORTED)
+
+set_target_properties(clangTidyPortabilityModule PROPERTIES
+  INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangLex;clangTidy;clangTidyUtils;clangTooling;LLVMSupport"
 )
 
 # Create imported target clangTidyReadabilityModule
@@ -408,11 +422,25 @@ set_target_properties(clangTidyUtils PROPERTIES
   INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangLex;clangTidy;LLVMSupport"
 )
 
+# Create imported target clangTidyZirconModule
+add_library(clangTidyZirconModule STATIC IMPORTED)
+
+set_target_properties(clangTidyZirconModule PROPERTIES
+  INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangLex;clangTidy;clangTidyUtils;LLVMSupport"
+)
+
 # Create imported target clangChangeNamespace
 add_library(clangChangeNamespace STATIC IMPORTED)
 
 set_target_properties(clangChangeNamespace PROPERTIES
   INTERFACE_LINK_LIBRARIES "clangAST;clangASTMatchers;clangBasic;clangFormat;clangFrontend;clangLex;clangTooling;clangToolingCore;LLVMSupport"
+)
+
+# Create imported target clangDoc
+add_library(clangDoc STATIC IMPORTED)
+
+set_target_properties(clangDoc PROPERTIES
+  INTERFACE_LINK_LIBRARIES "clangAnalysis;clangAST;clangASTMatchers;clangBasic;clangFrontend;clangIndex;clangLex;clangTooling;clangToolingCore;LLVMSupport"
 )
 
 # Create imported target clangQuery
@@ -502,7 +530,7 @@ unset(_IMPORT_CHECK_TARGETS)
 # Make sure the targets which have been exported in some other 
 # export set exist.
 unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-foreach(_target "LLVMCore" "LLVMMC" "LLVMSupport" "LLVMMCParser" "LLVMBinaryFormat" "LLVMAnalysis" "LLVMBitReader" "LLVMBitWriter" "LLVMCoroutines" "LLVMCoverage" "LLVMipo" "LLVMIRReader" "LLVMInstCombine" "LLVMInstrumentation" "LLVMLTO" "LLVMLinker" "LLVMObjCARCOpts" "LLVMObject" "LLVMPasses" "LLVMProfileData" "LLVMScalarOpts" "LLVMTarget" "LLVMTransformUtils" "LLVMOption" "LLVMAArch64CodeGen" "LLVMAArch64AsmParser" "LLVMAArch64AsmPrinter" "LLVMAArch64Desc" "LLVMAArch64Disassembler" "LLVMAArch64Info" "LLVMAArch64Utils" "LLVMARMCodeGen" "LLVMARMAsmParser" "LLVMARMAsmPrinter" "LLVMARMDesc" "LLVMARMDisassembler" "LLVMARMInfo" "LLVMARMUtils" "LLVMBPFCodeGen" "LLVMBPFAsmParser" "LLVMBPFAsmPrinter" "LLVMBPFDesc" "LLVMBPFDisassembler" "LLVMBPFInfo" "LLVMMipsCodeGen" "LLVMMipsAsmParser" "LLVMMipsAsmPrinter" "LLVMMipsDesc" "LLVMMipsDisassembler" "LLVMMipsInfo" "LLVMX86CodeGen" "LLVMX86AsmParser" "LLVMX86AsmPrinter" "LLVMX86Desc" "LLVMX86Disassembler" "LLVMX86Info" "LLVMX86Utils" "LLVMLineEditor" )
+foreach(_target "LLVMCore" "LLVMMC" "LLVMSupport" "LLVMMCParser" "LLVMBinaryFormat" "LLVMAnalysis" "LLVMBitReader" "LLVMBitWriter" "LLVMCoroutines" "LLVMCoverage" "LLVMipo" "LLVMIRReader" "LLVMInstCombine" "LLVMInstrumentation" "LLVMLTO" "LLVMLinker" "LLVMObjCARCOpts" "LLVMObject" "LLVMPasses" "LLVMProfileData" "LLVMScalarOpts" "LLVMTarget" "LLVMTransformUtils" "LLVMOption" "LLVMAArch64CodeGen" "LLVMAArch64AsmParser" "LLVMAArch64AsmPrinter" "LLVMAArch64Desc" "LLVMAArch64Disassembler" "LLVMAArch64Info" "LLVMAArch64Utils" "LLVMARMCodeGen" "LLVMARMAsmParser" "LLVMARMAsmPrinter" "LLVMARMDesc" "LLVMARMDisassembler" "LLVMARMInfo" "LLVMARMUtils" "LLVMBPFCodeGen" "LLVMBPFAsmParser" "LLVMBPFAsmPrinter" "LLVMBPFDesc" "LLVMBPFDisassembler" "LLVMBPFInfo" "LLVMX86CodeGen" "LLVMX86AsmParser" "LLVMX86AsmPrinter" "LLVMX86Desc" "LLVMX86Disassembler" "LLVMX86Info" "LLVMX86Utils" "LLVMLineEditor" )
   if(NOT TARGET "${_target}" )
     set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
   endif()

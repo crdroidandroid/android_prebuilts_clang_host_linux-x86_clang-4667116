@@ -111,7 +111,7 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::AllocSize: {
       const auto *A = cast<AllocSizeAttr>(At);
-      return new (C) AllocSizeAttr(A->getLocation(), C, A->elemSizeParam(), A->numElemsParam(), A->getSpellingListIndex());
+      return new (C) AllocSizeAttr(A->getLocation(), C, A->getElemSizeParam(), A->getNumElemsParam(), A->getSpellingListIndex());
     }
     case attr::AlwaysInline: {
       const auto *A = cast<AlwaysInlineAttr>(At);
@@ -131,6 +131,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::AnyX86NoCallerSavedRegisters: {
       const auto *A = cast<AnyX86NoCallerSavedRegistersAttr>(At);
+      return A->clone(C);
+    }
+    case attr::AnyX86NoCfCheck: {
+      const auto *A = cast<AnyX86NoCfCheckAttr>(At);
       return A->clone(C);
     }
     case attr::ArcWeakrefUnavailable: {
@@ -674,6 +678,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<OMPDeclareTargetDeclAttr>(At);
       return A->clone(C);
     }
+    case attr::OMPReferencedVar: {
+      const auto *A = cast<OMPReferencedVarAttr>(At);
+      return A->clone(C);
+    }
     case attr::OMPThreadPrivateDecl: {
       const auto *A = cast<OMPThreadPrivateDeclAttr>(At);
       return A->clone(C);
@@ -1174,6 +1182,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
     case attr::AnyX86NoCallerSavedRegisters: {
       return nullptr;
     }
+    case attr::AnyX86NoCfCheck: {
+      return nullptr;
+    }
     case attr::ArcWeakrefUnavailable: {
       return nullptr;
     }
@@ -1515,6 +1526,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
       return nullptr;
     }
     case attr::OMPDeclareTargetDecl: {
+      return nullptr;
+    }
+    case attr::OMPReferencedVar: {
       return nullptr;
     }
     case attr::OMPThreadPrivateDecl: {

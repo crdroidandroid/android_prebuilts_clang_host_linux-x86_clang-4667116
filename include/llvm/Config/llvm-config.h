@@ -72,14 +72,14 @@
 #define LLVM_VERSION_MINOR 0
 
 /* Patch version of the LLVM API */
-#define LLVM_VERSION_PATCH 1
+#define LLVM_VERSION_PATCH 2
 
 /* LLVM version string */
-#define LLVM_VERSION_STRING "7.0.1svn"
+#define LLVM_VERSION_STRING "7.0.2svn"
 
 /* Whether LLVM records statistics for use with GetStatistics(),
  * PrintStatistics() or PrintStatisticsJSON()
  */
-#define LLVM_ENABLE_STATS 0
+#define LLVM_FORCE_ENABLE_STATS 0
 
 #endif

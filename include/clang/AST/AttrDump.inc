@@ -108,14 +108,14 @@
   }
   case attr::AllocAlign: {
     const auto *SA = cast<AllocAlignAttr>(A);
-    OS << " " << SA->paramIndex().getSourceIndex();
+    OS << " " << SA->getParamIndex().getSourceIndex();
     break;
   }
   case attr::AllocSize: {
     const auto *SA = cast<AllocSizeAttr>(A);
-    OS << " " << SA->elemSizeParam().getSourceIndex();
-    if (SA->numElemsParam().isValid())
-      OS << " " << SA->numElemsParam().getSourceIndex();
+    OS << " " << SA->getElemSizeParam().getSourceIndex();
+    if (SA->getNumElemsParam().isValid())
+      OS << " " << SA->getNumElemsParam().getSourceIndex();
     break;
   }
   case attr::AlwaysInline: {
@@ -136,6 +136,9 @@
   case attr::AnyX86NoCallerSavedRegisters: {
     break;
   }
+  case attr::AnyX86NoCfCheck: {
+    break;
+  }
   case attr::ArcWeakrefUnavailable: {
     break;
   }
@@ -144,8 +147,8 @@
     const auto *SA = cast<ArgumentWithTypeTagAttr>(A);
     if (SA->getArgumentKind())
       OS << " " << SA->getArgumentKind()->getName();
-    OS << " " << SA->argumentIdx().getSourceIndex();
-    OS << " " << SA->typeTagIdx().getSourceIndex();
+    OS << " " << SA->getArgumentIdx().getSourceIndex();
+    OS << " " << SA->getTypeTagIdx().getSourceIndex();
     if (SA->getIsPointer()) OS << " IsPointer";
     break;
   }
@@ -423,7 +426,7 @@
   }
   case attr::FormatArg: {
     const auto *SA = cast<FormatArgAttr>(A);
-    OS << " " << SA->formatIdx().getSourceIndex();
+    OS << " " << SA->getFormatIdx().getSourceIndex();
     break;
   }
   case attr::GNUInline: {
@@ -691,8 +694,8 @@
   }
   case attr::NonNull: {
     const auto *SA = cast<NonNullAttr>(A);
-    for (auto Idx : SA->args())
-      OS << " " << Idx.getSourceIndex();
+    for (const auto &Val : SA->args())
+      OS << " " << Val.getSourceIndex();
     break;
   }
   case attr::NotTailCalled: {
@@ -744,6 +747,11 @@
       OS << " MT_Link";
       break;
     }
+    break;
+  }
+  case attr::OMPReferencedVar: {
+    const auto *SA = cast<OMPReferencedVarAttr>(A);
+    dumpStmt(SA->getRef());
     break;
   }
   case attr::OMPThreadPrivateDecl: {
@@ -870,8 +878,8 @@
     const auto *SA = cast<OwnershipAttr>(A);
     if (SA->getModule())
       OS << " " << SA->getModule()->getName();
-    for (auto Idx : SA->args())
-      OS << " " << Idx.getSourceIndex();
+    for (const auto &Val : SA->args())
+      OS << " " << Val.getSourceIndex();
     break;
   }
   case attr::Packed: {

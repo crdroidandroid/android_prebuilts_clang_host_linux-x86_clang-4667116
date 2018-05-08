@@ -96,6 +96,10 @@
   bool VisitAnyX86NoCallerSavedRegistersAttr(AnyX86NoCallerSavedRegistersAttr *A) {
     return true; 
   }
+  bool TraverseAnyX86NoCfCheckAttr(AnyX86NoCfCheckAttr *A);
+  bool VisitAnyX86NoCfCheckAttr(AnyX86NoCfCheckAttr *A) {
+    return true; 
+  }
   bool TraverseArcWeakrefUnavailableAttr(ArcWeakrefUnavailableAttr *A);
   bool VisitArcWeakrefUnavailableAttr(ArcWeakrefUnavailableAttr *A) {
     return true; 
@@ -550,6 +554,10 @@
   }
   bool TraverseOMPDeclareTargetDeclAttr(OMPDeclareTargetDeclAttr *A);
   bool VisitOMPDeclareTargetDeclAttr(OMPDeclareTargetDeclAttr *A) {
+    return true; 
+  }
+  bool TraverseOMPReferencedVarAttr(OMPReferencedVarAttr *A);
+  bool VisitOMPReferencedVarAttr(OMPReferencedVarAttr *A) {
     return true; 
   }
   bool TraverseOMPThreadPrivateDeclAttr(OMPThreadPrivateDeclAttr *A);
@@ -1146,6 +1154,15 @@ bool VISITORCLASS<Derived>::TraverseAnyX86NoCallerSavedRegistersAttr(AnyX86NoCal
   if (!getDerived().VisitAttr(A))
     return false;
   if (!getDerived().VisitAnyX86NoCallerSavedRegistersAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseAnyX86NoCfCheckAttr(AnyX86NoCfCheckAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitAnyX86NoCfCheckAttr(A))
     return false;
   return true;
 }
@@ -2282,6 +2299,17 @@ bool VISITORCLASS<Derived>::TraverseOMPDeclareTargetDeclAttr(OMPDeclareTargetDec
 }
 
 template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseOMPReferencedVarAttr(OMPReferencedVarAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitOMPReferencedVarAttr(A))
+    return false;
+  if (!getDerived().TraverseStmt(A->getRef()))
+    return false;
+  return true;
+}
+
+template <typename Derived>
 bool VISITORCLASS<Derived>::TraverseOMPThreadPrivateDeclAttr(OMPThreadPrivateDeclAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
@@ -3194,6 +3222,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseAnyX86InterruptAttr(cast<AnyX86InterruptAttr>(A));
     case attr::AnyX86NoCallerSavedRegisters:
       return getDerived().TraverseAnyX86NoCallerSavedRegistersAttr(cast<AnyX86NoCallerSavedRegistersAttr>(A));
+    case attr::AnyX86NoCfCheck:
+      return getDerived().TraverseAnyX86NoCfCheckAttr(cast<AnyX86NoCfCheckAttr>(A));
     case attr::ArcWeakrefUnavailable:
       return getDerived().TraverseArcWeakrefUnavailableAttr(cast<ArcWeakrefUnavailableAttr>(A));
     case attr::ArgumentWithTypeTag:
@@ -3422,6 +3452,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseOMPDeclareSimdDeclAttr(cast<OMPDeclareSimdDeclAttr>(A));
     case attr::OMPDeclareTargetDecl:
       return getDerived().TraverseOMPDeclareTargetDeclAttr(cast<OMPDeclareTargetDeclAttr>(A));
+    case attr::OMPReferencedVar:
+      return getDerived().TraverseOMPReferencedVarAttr(cast<OMPReferencedVarAttr>(A));
     case attr::OMPThreadPrivateDecl:
       return getDerived().TraverseOMPThreadPrivateDeclAttr(cast<OMPThreadPrivateDeclAttr>(A));
     case attr::ObjCBoxable:

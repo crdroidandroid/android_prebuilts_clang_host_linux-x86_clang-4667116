@@ -682,8 +682,7 @@ public:
 };
 
 class AllocAlignAttr : public InheritableAttr {
-ParamIdx ParamIndex;
-
+ParamIdx paramIndex;
 
 public:
   static AllocAlignAttr *CreateImplicit(ASTContext &Ctx, ParamIdx ParamIndex, SourceRange Loc = SourceRange()) {
@@ -697,7 +696,7 @@ public:
               , unsigned SI
              )
     : InheritableAttr(attr::AllocAlign, R, SI, false, false)
-              , ParamIndex(ParamIndex)
+              , paramIndex(ParamIndex)
   {
   }
 
@@ -705,9 +704,9 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
-
-  ParamIdx paramIndex() const { return ParamIndex; }
-
+  ParamIdx getParamIndex() const {
+    return paramIndex;
+  }
 
 
 
@@ -715,11 +714,9 @@ public:
 };
 
 class AllocSizeAttr : public InheritableAttr {
-ParamIdx ElemSizeParam;
+ParamIdx elemSizeParam;
 
-
-ParamIdx NumElemsParam;
-
+ParamIdx numElemsParam;
 
 public:
   static AllocSizeAttr *CreateImplicit(ASTContext &Ctx, ParamIdx ElemSizeParam, ParamIdx NumElemsParam, SourceRange Loc = SourceRange()) {
@@ -734,8 +731,8 @@ public:
               , unsigned SI
              )
     : InheritableAttr(attr::AllocSize, R, SI, false, false)
-              , ElemSizeParam(ElemSizeParam)
-              , NumElemsParam(NumElemsParam)
+              , elemSizeParam(ElemSizeParam)
+              , numElemsParam(NumElemsParam)
   {
   }
 
@@ -744,8 +741,8 @@ public:
               , unsigned SI
              )
     : InheritableAttr(attr::AllocSize, R, SI, false, false)
-              , ElemSizeParam(ElemSizeParam)
-              , NumElemsParam()
+              , elemSizeParam(ElemSizeParam)
+              , numElemsParam()
   {
   }
 
@@ -753,13 +750,13 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  ParamIdx getElemSizeParam() const {
+    return elemSizeParam;
+  }
 
-  ParamIdx elemSizeParam() const { return ElemSizeParam; }
-
-
-
-  ParamIdx numElemsParam() const { return NumElemsParam; }
-
+  ParamIdx getNumElemsParam() const {
+    return numElemsParam;
+  }
 
 
 
@@ -920,6 +917,30 @@ public:
   static bool classof(const Attr *A) { return A->getKind() == attr::AnyX86NoCallerSavedRegisters; }
 };
 
+class AnyX86NoCfCheckAttr : public InheritableAttr {
+public:
+  static AnyX86NoCfCheckAttr *CreateImplicit(ASTContext &Ctx, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) AnyX86NoCfCheckAttr(Loc, Ctx, 0);
+    A->setImplicit(true);
+    return A;
+  }
+
+  AnyX86NoCfCheckAttr(SourceRange R, ASTContext &Ctx
+              , unsigned SI
+             )
+    : InheritableAttr(attr::AnyX86NoCfCheck, R, SI, false, false)
+  {
+  }
+
+  AnyX86NoCfCheckAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::AnyX86NoCfCheck; }
+};
+
 class ArcWeakrefUnavailableAttr : public InheritableAttr {
 public:
   static ArcWeakrefUnavailableAttr *CreateImplicit(ASTContext &Ctx, SourceRange Loc = SourceRange()) {
@@ -947,11 +968,9 @@ public:
 class ArgumentWithTypeTagAttr : public InheritableAttr {
 IdentifierInfo * argumentKind;
 
-ParamIdx ArgumentIdx;
+ParamIdx argumentIdx;
 
-
-ParamIdx TypeTagIdx;
-
+ParamIdx typeTagIdx;
 
 bool isPointer;
 
@@ -986,8 +1005,8 @@ public:
              )
     : InheritableAttr(attr::ArgumentWithTypeTag, R, SI, false, false)
               , argumentKind(ArgumentKind)
-              , ArgumentIdx(ArgumentIdx)
-              , TypeTagIdx(TypeTagIdx)
+              , argumentIdx(ArgumentIdx)
+              , typeTagIdx(TypeTagIdx)
               , isPointer(IsPointer)
   {
   }
@@ -1000,8 +1019,8 @@ public:
              )
     : InheritableAttr(attr::ArgumentWithTypeTag, R, SI, false, false)
               , argumentKind(ArgumentKind)
-              , ArgumentIdx(ArgumentIdx)
-              , TypeTagIdx(TypeTagIdx)
+              , argumentIdx(ArgumentIdx)
+              , typeTagIdx(TypeTagIdx)
               , isPointer()
   {
   }
@@ -1025,13 +1044,13 @@ public:
     return argumentKind;
   }
 
+  ParamIdx getArgumentIdx() const {
+    return argumentIdx;
+  }
 
-  ParamIdx argumentIdx() const { return ArgumentIdx; }
-
-
-
-  ParamIdx typeTagIdx() const { return TypeTagIdx; }
-
+  ParamIdx getTypeTagIdx() const {
+    return typeTagIdx;
+  }
 
   bool getIsPointer() const {
     return isPointer;
@@ -3143,8 +3162,7 @@ public:
 };
 
 class FormatArgAttr : public InheritableAttr {
-ParamIdx FormatIdx;
-
+ParamIdx formatIdx;
 
 public:
   static FormatArgAttr *CreateImplicit(ASTContext &Ctx, ParamIdx FormatIdx, SourceRange Loc = SourceRange()) {
@@ -3158,7 +3176,7 @@ public:
               , unsigned SI
              )
     : InheritableAttr(attr::FormatArg, R, SI, false, false)
-              , FormatIdx(FormatIdx)
+              , formatIdx(FormatIdx)
   {
   }
 
@@ -3166,9 +3184,9 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
-
-  ParamIdx formatIdx() const { return FormatIdx; }
-
+  ParamIdx getFormatIdx() const {
+    return formatIdx;
+  }
 
 
 
@@ -4950,15 +4968,6 @@ public:
               , args_Size(ArgsSize), args_(new (Ctx, 16) ParamIdx[args_Size])
   {
     std::copy(Args, Args + args_Size, args_);
-    #ifndef NDEBUG
-    if (args_size()) {
-      bool HasThis = args_begin()->hasThis();
-      for (const auto Idx : args()) {
-        assert(Idx.isValid() && "ParamIdx must be valid");
-        assert(HasThis == Idx.hasThis() && "HasThis must be consistent");
-      }
-    }
-    #endif
   }
 
   NonNullAttr(SourceRange R, ASTContext &Ctx
@@ -5346,6 +5355,38 @@ public:
   
 
   static bool classof(const Attr *A) { return A->getKind() == attr::OMPDeclareTargetDecl; }
+};
+
+class OMPReferencedVarAttr : public Attr {
+Expr * ref;
+
+public:
+  static OMPReferencedVarAttr *CreateImplicit(ASTContext &Ctx, Expr * Ref, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) OMPReferencedVarAttr(Loc, Ctx, Ref, 0);
+    A->setImplicit(true);
+    return A;
+  }
+
+  OMPReferencedVarAttr(SourceRange R, ASTContext &Ctx
+              , Expr * Ref
+              , unsigned SI
+             )
+    : Attr(attr::OMPReferencedVar, R, SI, false)
+              , ref(Ref)
+  {
+  }
+
+  OMPReferencedVarAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+  Expr * getRef() const {
+    return ref;
+  }
+
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::OMPReferencedVar; }
 };
 
 class OMPThreadPrivateDeclAttr : public InheritableAttr {
@@ -6151,15 +6192,6 @@ public:
               , args_Size(ArgsSize), args_(new (Ctx, 16) ParamIdx[args_Size])
   {
     std::copy(Args, Args + args_Size, args_);
-    #ifndef NDEBUG
-    if (args_size()) {
-      bool HasThis = args_begin()->hasThis();
-      for (const auto Idx : args()) {
-        assert(Idx.isValid() && "ParamIdx must be valid");
-        assert(HasThis == Idx.hasThis() && "HasThis must be consistent");
-      }
-    }
-    #endif
   }
 
   OwnershipAttr(SourceRange R, ASTContext &Ctx
@@ -7708,7 +7740,7 @@ public:
     template<class Compare>
     ParsedTargetAttr parse(Compare cmp) const {
       ParsedTargetAttr Attrs = parse();
-      std::sort(std::begin(Attrs.Features), std::end(Attrs.Features), cmp);
+      llvm::sort(std::begin(Attrs.Features), std::end(Attrs.Features), cmp);
       return Attrs;
     }
 
